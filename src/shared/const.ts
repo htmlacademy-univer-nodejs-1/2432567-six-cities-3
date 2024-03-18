@@ -1,4 +1,4 @@
-enum City {
+export enum City {
   Paris = 'Paris',
   Cologne = 'Cologne',
   Brussels = 'Brussels',
@@ -7,7 +7,7 @@ enum City {
   Dusseldorf = 'Dusseldorf'
 }
 
-enum CityCoordinates {
+export enum CityCoordinates {
   Paris = '48.85661;2.351499',
   Cologne = '50.938361;6.959974',
   Brussels = '50.846557;4.351697',
@@ -16,7 +16,7 @@ enum CityCoordinates {
   Dusseldorf = '53.550341;10.000654'
 }
 
-enum Facilities {
+export enum Facilities {
   Breakfast = 'Breakfast',
   AirConditioning = 'Air conditioning',
   LaptopFriendlyWorkspace = 'Laptop friendly workspace',
@@ -26,16 +26,43 @@ enum Facilities {
   Fridge = 'Fridge'
 }
 
-enum HouseType {
+export enum HouseType {
   apartment = 'apartment',
   house = 'house',
   room = 'room',
   hotel = 'hotel'
 }
 
-enum UserType {
+export enum UserType {
   pro = 'pro',
-  usual = 'usual'
+  normal = 'normal'
 }
 
-export { City, CityCoordinates, Facilities, HouseType, UserType };
+export const MIN_LENGTH_NAME = 1;
+export const MAX_LENGTH_NAME = 15;
+
+export const MIN_LENGTH_PASSWORD = 6;
+export const MAX_LENGTH_PASSWORD = 12;
+
+export const MIN_LENGTH_TITLE = 10;
+export const MAX_LENGTH_TITLE = 100;
+
+export const MIN_LENGTH_DESCRIPTION = 10;
+export const MAX_LENGTH_DESCRIPTION = 100;
+
+export const MIN_PRICE = 100;
+export const MAX_PRICE = 100_000;
+
+export const COUNT_PHOTOS = 6;
+
+export const FIRST_WEEK_DAY = 1;
+export const LAST_WEEK_DAY = 7;
+
+export const MIN_RATING = 1;
+export const MAX_RATING = 5;
+
+export const MIN_ROOMS = 1;
+export const MAX_ROOMS = 8;
+
+export const MIN_GUESTS = 1;
+export const MAX_GUESTS = 8;
