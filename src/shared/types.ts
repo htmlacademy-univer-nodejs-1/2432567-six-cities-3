@@ -1,6 +1,6 @@
 import { City, Facilities, HouseType, UserType } from './const.js';
 
-type User = {
+export type User = {
   name: string;
   email: string;
   avatarUrl: string;
@@ -8,19 +8,19 @@ type User = {
   type: UserType;
 }
 
-type Commet = {
+export type Commet = {
   text: string;
   date: string;
   rating: number;
   author: User;
 }
 
-type Coordinates = {
+export type Coordinates = {
   latitude: number;
   longitude: number;
 }
 
-type Offer = {
+export type Offer = {
   title: string;
   description: string;
   postDate: Date;
@@ -36,8 +36,5 @@ type Offer = {
   price: number,
   facilities: Facilities[],
   author: User,
-  countComments: number,
   coordinates: Coordinates,
 }
-
-export type { User, Commet, Offer, Coordinates };

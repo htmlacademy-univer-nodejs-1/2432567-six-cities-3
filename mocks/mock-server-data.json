@@ -1,0 +1,59 @@
+{
+  "api": {
+    "titles": [
+      "title1",
+      "title2",
+      "title3",
+      "title4",
+      "title5"
+    ],
+    "descriptions": [
+      "description1",
+      "description2",
+      "description3",
+      "description4",
+      "description5"
+    ],
+    "previewPhotos": [
+      "prev-photo-1.jpg",
+      "prev-photo-2.jpg",
+      "prev-photo-3.jpg",
+      "prev-photo-4.jpg",
+      "prev-photo-5.jpg",
+      "prev-photo-6.jpg",
+      "prev-photo-7.jpg",
+      "prev-photo-8.jpg"
+    ],
+    "photos": [
+      "photo-1.jpg",
+      "photo-2.jpg",
+      "photo-3.jpg",
+      "photo-4.jpg",
+      "photo-5.jpg",
+      "photo-6.jpg",
+      "photo-7.jpg",
+      "photo-8.jpg"
+    ],
+    "authorNames": [
+      "authorName1",
+      "authorName2",
+      "authorName3",
+      "authorName4",
+      "authorName5"
+    ],
+    "authorEmails": [
+      "author1@example.com",
+      "author2@example.com",
+      "author3@example.com",
+      "author4@example.com",
+      "author5@example.com"
+    ],
+    "authorAvatars": [
+      "author1-avatar.jpg",
+      "author2-avatar.jpg",
+      "author3-avatar.jpg",
+      "author4-avatar.jpg",
+      "author5-avatar.jpg"
+    ]
+  }
+}
