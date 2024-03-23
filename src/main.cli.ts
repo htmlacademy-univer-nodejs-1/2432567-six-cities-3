@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-
 import { CLIApplication } from './cli/cli-application.js';
 import { GenerateCommand } from './cli/commands/generate.command.js';
 import { HelpCommand } from './cli/commands/help.command.js';
