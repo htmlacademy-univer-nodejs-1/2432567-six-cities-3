@@ -1,6 +1,6 @@
-import { getErrorMessage } from '../utils/error/error.js';
+import { getErrorMessage } from '../utils/error-message/error-message.js';
 import { TSVFileReader } from '../utils/file-reader/tsv-file-reader.js';
-import { createOffer } from '../utils/offer/offer.js';
+import { createOffer } from '../utils/create-offer/create-offer.js';
 import { Command } from './command.interface.js';
 
 

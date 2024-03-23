@@ -3,7 +3,7 @@ import { MockServerData } from '../utils/file-generator/types.js';
 import { Command } from './command.interface.js';
 import got from 'got';
 import {TSVFileWriter} from '../utils/file-writer/tsc-file-writer.js';
-import {getErrorMessage} from '../utils/error/error.js';
+import {getErrorMessage} from '../utils/error-message/error-message.js';
 
 
 export class GenerateCommand implements Command {
