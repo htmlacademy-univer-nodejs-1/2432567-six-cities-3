@@ -1,6 +1,6 @@
 import EventEmitter from 'node:stream';
 import { Offer } from '../../../shared/types.js';
-import { createOffer } from '../offer/offer.js';
+import { createOffer } from '../create-offer/create-offer.js';
 import { FileReader } from './file-reader.interface.js';
 import { createReadStream } from 'node:fs';
 
