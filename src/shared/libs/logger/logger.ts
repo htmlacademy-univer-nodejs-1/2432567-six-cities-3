@@ -5,7 +5,7 @@ import { getCurrentModuleDirectoryPath } from '../../utils/file-system/file-syst
 import { injectable } from 'inversify';
 
 @injectable()
-export class PinoLogger implements LoggerInterface {
+export class Logger implements LoggerInterface {
   private readonly logger: PinoInstance;
 
   constructor() {
