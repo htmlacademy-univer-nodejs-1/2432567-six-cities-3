@@ -1,17 +1,17 @@
 import { LoggerInterface } from '../shared/libs/logger/logger.interface.js';
 import {ConfigInterface} from '../shared/libs/config/config.interface.js';
-import { RestSchema } from '../shared/libs/config/rest.schema.js';
+import { ConfigSchema } from '../shared/libs/config/config.schema';
 import { inject, injectable } from 'inversify';
-import { Component } from '../shared/component.js';
+import { RestComponent } from './rest.component';
 import { DBClient } from '../shared/libs/db-client/db-client.js';
-import { getMongoURI } from '../shared/utils/get-url/get-url.js';
+import { getMongoURI } from '../shared/utils/get-url.js';
 
 @injectable()
 export class RestApplication {
   constructor(
-    @inject(Component.Logger) private readonly logger: LoggerInterface,
-    @inject(Component.Config) private readonly config: ConfigInterface<RestSchema>,
-    @inject(Component.DBClient) private readonly dbClient: DBClient
+    @inject(RestComponent.Logger) private readonly pinoLogger: LoggerInterface,
+    @inject(RestComponent.Config) private readonly config: ConfigInterface<ConfigSchema>,
+    @inject(RestComponent.DBClient) private readonly dbClient: DBClient
   ) {}
 
   private async _initDb() {
@@ -27,11 +27,11 @@ export class RestApplication {
   }
 
   public async init() {
-    this.logger.info('Application initialization');
-    this.logger.info(`Get value from env $PORT: ${this.config.get('PORT')}`);
+    this.pinoLogger.info('Application initialization');
+    this.pinoLogger.info(`Get value from env $PORT: ${this.config.get('PORT')}`);
 
-    this.logger.info('Init database…');
+    this.pinoLogger.info('Init database…');
     await this._initDb();
-    this.logger.info('Init database completed');
+    this.pinoLogger.info('Init database completed');
   }
 }

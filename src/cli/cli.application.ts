@@ -3,7 +3,7 @@ import { Command } from './commands/command.interface.js';
 
 type CommandCollection = Record<string, Command>;
 
-export class CLIApplication {
+export class CliApplication {
   private commands: CommandCollection = {};
 
   constructor(

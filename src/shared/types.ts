@@ -4,11 +4,10 @@ export type User = {
   name: string;
   email: string;
   avatarUrl: string;
-  password: string;
-  type: UserType;
+  userType: UserType;
 }
 
-export type Commet = {
+export type Comment = {
   text: string;
   date: string;
   rating: number;
@@ -25,14 +24,14 @@ export type Offer = {
   description: string;
   postDate: Date;
   city: City,
-  previewPhoto: string,
+  preview: string,
   photos: string[],
   isPremium: boolean,
   isFavorite: boolean,
   rating: number,
-  type: HouseType,
-  roomCount: number,
-  guestsCount: number,
+  houseType: HouseType,
+  countRooms: number,
+  countGuests: number,
   price: number,
   facilities: Facilities[],
   author: User,

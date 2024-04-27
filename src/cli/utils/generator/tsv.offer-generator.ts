@@ -1,10 +1,10 @@
 import dayjs from 'dayjs';
 import { OfferGenerator } from './offer-generator.interface.js';
-import { MockServerData } from './types.js';
+import { MockServerData } from '../../types.js';
 import { generateRandomValue, getRandomItem, getRandomItems } from '../random/random.js';
 import { COUNT_PHOTOS, City, CityCoordinates, FIRST_WEEK_DAY, Facilities, HouseType, LAST_WEEK_DAY, MAX_GUESTS, MAX_LENGTH_PASSWORD, MAX_PRICE, MAX_RATING, MAX_ROOMS, MIN_GUESTS, MIN_LENGTH_PASSWORD, MIN_PRICE, MIN_RATING, MIN_ROOMS, UserType } from '../../../shared/const.js';
 
-export class TSVOfferGenerator implements OfferGenerator {
+export class TsvOfferGenerator implements OfferGenerator {
   constructor(private readonly mockData: MockServerData) { }
 
   public generate(): string {

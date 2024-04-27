@@ -1,9 +1,9 @@
 import * as Mongoose from 'mongoose';
 import { inject, injectable } from 'inversify';
 import { DBClientInterface } from './db-client.interface.js';
-import { Component } from '../../component.js';
-import { Logger } from '../logger/logger.js';
+import { RestComponent } from '../../../rest/rest.component';
 import { setTimeout } from 'node:timers/promises';
+import { LoggerInterface } from '../logger/logger.interface';
 
 const RETRY_COUNT = 5;
 const RETRY_TIMEOUT = 1000;
@@ -11,13 +11,11 @@ const RETRY_TIMEOUT = 1000;
 @injectable()
 export class DBClient implements DBClientInterface {
   private mongoose: typeof Mongoose;
-  private isConnected: boolean;
 
   constructor(
-    @inject(Component.Logger) private readonly logger: Logger
-  ) {
-    this.isConnected = false;
-  }
+    @inject(RestComponent.Logger) private readonly pinoLogger: LoggerInterface,
+  private isConnected: boolean = false
+  ) { }
 
   public isConnectedToDatabase() {
     return this.isConnected;
@@ -28,26 +26,22 @@ export class DBClient implements DBClientInterface {
       throw new Error('MongoDB client already connected');
     }
 
-    this.logger.info('Trying to connect to MongoDB…');
+    this.pinoLogger.info('Trying to connect to MongoDB…');
 
     let attempt = 0;
     while (attempt < RETRY_COUNT) {
       try {
         this.mongoose = await Mongoose.connect(uri);
         this.isConnected = true;
-        this.logger.info('Database connection established.');
+        this.pinoLogger.info('Database connection established.');
         return;
       } catch (error) {
         attempt++;
-        this.logger.error(`Failed to connect to the database. Attempt ${attempt}`, error as Error);
+        this.pinoLogger.error(`Failed to connect to the database. Attempt ${attempt}`, error as Error);
         await setTimeout(RETRY_TIMEOUT);
       }
     }
-
-    this.mongoose = await Mongoose.connect(uri);
-    this.isConnected = true;
-
-    this.logger.info('Database connection established.');
+    throw new Error(`Unable to establish database connection after ${RETRY_COUNT}`);
   }
 
   public async disconnect(): Promise<void> {
@@ -57,6 +51,6 @@ export class DBClient implements DBClientInterface {
 
     await this.mongoose.disconnect?.();
     this.isConnected = false;
-    this.logger.info('Database connection closed.');
+    this.pinoLogger.info('Database connection closed.');
   }
 }

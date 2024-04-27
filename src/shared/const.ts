@@ -66,3 +66,6 @@ export const MAX_ROOMS = 8;
 
 export const MIN_GUESTS = 1;
 export const MAX_GUESTS = 8;
+
+export const DEFAULT_DB_PORT = '27018';
+export const DEFAULT_USER_PASSWORD = 'QWErty321';
