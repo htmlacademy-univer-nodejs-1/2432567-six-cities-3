@@ -1,21 +1,22 @@
 import 'reflect-metadata';
 import { Container } from 'inversify';
 import { RestApplication } from './rest/rest.application.js';
-import { PinoLogger } from './shared/libs/logger/pino.logger.js';
-import { RestConfig } from './shared/libs/config/rest.config.js';
-import { RestSchema } from './shared/libs/config/rest.schema.js';
-import { ConfigInterface } from './shared/libs/config/config.interface.js';
-import { Component } from './shared/component.js';
-import { LoggerInterface } from './shared/libs/logger/logger.interface.js';
+import { RestComponent } from './rest/rest.component';
+import { createRestApplicationContainer } from './rest/rest.container';
+import { createUserContainer } from './shared/modules/user/user.container';
+import { createOfferContainer } from './shared/modules/offer/offer.container';
+import { createCommentContainer } from './shared/modules/comment/comment.container';
 
 
 async function bootstrap() {
-  const container = new Container();
-  container.bind<RestApplication>(Component.RestApplication).to(RestApplication).inSingletonScope();
-  container.bind<LoggerInterface>(Component.Logger).to(PinoLogger).inSingletonScope();
-  container.bind<ConfigInterface<RestSchema>>(Component.Config).to(RestConfig).inSingletonScope();
+  const container = Container.merge(
+    createRestApplicationContainer(),
+    createUserContainer(),
+    createOfferContainer(),
+    createCommentContainer(),
+  );
 
-  const application = container.get<RestApplication>(Component.RestApplication);
+  const application = container.get<RestApplication>(RestComponent.RestApplication);
   await application.init();
 }
 

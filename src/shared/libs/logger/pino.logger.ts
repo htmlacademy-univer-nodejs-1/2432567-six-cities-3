@@ -1,7 +1,7 @@
 import { Logger as PinoInstance, pino, transport } from 'pino';
 import { LoggerInterface } from './logger.interface.js';
 import { resolve } from 'node:path';
-import { getCurrentModuleDirectoryPath } from '../../utils/file-system/file-system.js';
+import { getCurrentModuleDirectoryPath } from '../../utils/file-system.js';
 import { injectable } from 'inversify';
 
 @injectable()

@@ -1,6 +1,7 @@
 import { resolve } from 'node:path';
 import { Command } from './command.interface';
 import { readFileSync } from 'node:fs';
+import { ConsoleLogger } from '../../shared/libs/logger/console.logger';
 
 
 type TPackageJSONConfig = {
@@ -17,8 +18,10 @@ function isPackageJSONConfig(value: unknown): value is TPackageJSONConfig {
 }
 
 export class VersionCommand implements Command {
+
   constructor(
-    private readonly filePath: string = './package.json'
+    private readonly filePath: string = './package.json',
+    private logger: ConsoleLogger = new ConsoleLogger()
   ) { }
 
   private readVersion(): string {
@@ -39,11 +42,11 @@ export class VersionCommand implements Command {
   public async execute(..._parameters: string[]): Promise<void> {
     try {
       const version = this.readVersion();
-      console.info(version);
+      this.logger.info(version);
     } catch (error: unknown) {
-      console.error(`Failed ti read version from ${this.filePath}`);
+      this.logger.error(`Failed ti read version from ${this.filePath}`, error as Error);
       if (error instanceof Error) {
-        console.error(error.message);
+        this.logger.error(error.message, error);
       }
     }
   }

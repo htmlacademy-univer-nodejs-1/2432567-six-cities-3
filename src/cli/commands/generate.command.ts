@@ -1,13 +1,21 @@
-import { TSVOfferGenerator } from '../utils/file-generator/tsv-offer-generator.js';
-import { MockServerData } from '../utils/file-generator/types.js';
+import { TsvOfferGenerator } from '../utils/generator/tsv.offer-generator';
+import { MockServerData } from '../types.js';
 import { Command } from './command.interface.js';
 import got from 'got';
-import {TSVFileWriter} from '../utils/file-writer/tsc-file-writer.js';
+import {TSVFileWriter} from '../utils/file-writer/tsv.file-writer';
 import {getErrorMessage} from '../utils/error-message/error-message.js';
+import { ConsoleLogger } from '../../shared/libs/logger/console.logger';
 
 
 export class GenerateCommand implements Command {
   private initialData: MockServerData;
+  constructor(
+    private logger: ConsoleLogger = new ConsoleLogger()
+  ) { }
+
+  public getName(): string {
+    return '--generate';
+  }
 
   private async load(url: string) {
     try {
@@ -18,16 +26,12 @@ export class GenerateCommand implements Command {
   }
 
   private async write(filepath: string, offerCount: number) {
-    const tsvOfferGenerator = new TSVOfferGenerator(this.initialData);
+    const tsvOfferGenerator = new TsvOfferGenerator(this.initialData);
     const tsvFileWriter = new TSVFileWriter(filepath);
 
     for (let i = 0; i < offerCount; i++) {
       await tsvFileWriter.write(tsvOfferGenerator.generate());
     }
-  }
-
-  public getName(): string {
-    return '--generate';
   }
 
   public async execute(...parameters: string[]): Promise<void> {
@@ -37,12 +41,12 @@ export class GenerateCommand implements Command {
     try {
       await this.load(url);
       await this.write(filepath, offerCount);
-      console.info(`File ${filepath} was created!`);
+      this.logger.info(`File ${filepath} was created!`);
     } catch (error: unknown) {
-      console.error('Can\'t generate data');
+      this.logger.error('Can\'t generate data', error as Error);
       if (error instanceof Error) {
-        console.error(error.message);
-        console.error(getErrorMessage(error));
+        this.logger.error(error.message, error);
+        this.logger.error(getErrorMessage(error), error);
       }
     }
   }

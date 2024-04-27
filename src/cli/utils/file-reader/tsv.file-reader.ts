@@ -6,7 +6,7 @@ import { createReadStream } from 'node:fs';
 
 const CHUNK_SIZE = 16384; // 16KB
 
-export class TSVFileReader extends EventEmitter implements FileReader {
+export class TsvFileReader extends EventEmitter implements FileReader {
   private rawData = '';
 
   constructor(
@@ -33,7 +33,9 @@ export class TSVFileReader extends EventEmitter implements FileReader {
         remainingData = remainingData.slice(++nextLinePosition);
         importedRowCount++;
 
-        this.emit('line', completeRow);
+        await new Promise((resolve) => {
+          this.emit('line', completeRow, resolve);
+        });
       }
     }
 

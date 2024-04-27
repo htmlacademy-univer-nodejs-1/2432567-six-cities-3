@@ -38,6 +38,7 @@
     "npm": ">=8"
   },
   "dependencies": {
+    "@typegoose/typegoose": "^12.2.0",
     "@types/convict-format-with-validator": "^6.0.5",
     "chalk": "^5.3.0",
     "convict": "^6.2.4",
@@ -46,6 +47,7 @@
     "dotenv": "^16.4.5",
     "got": "^11.8.2",
     "inversify": "^6.0.2",
+    "mongoose": "^8.2.4",
     "pino": "^8.19.0",
     "reflect-metadata": "^0.2.1"
   }
