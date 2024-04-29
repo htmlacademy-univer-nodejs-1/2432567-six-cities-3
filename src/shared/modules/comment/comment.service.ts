@@ -4,22 +4,25 @@ import type { CommentEntity } from './comment.entity.js';
 import type { CreateCommentDTO } from './dto/create-comment.dto.js';
 import { CommentServiceInterface } from './comment.service.interface';
 import { CommentComponent } from './comment.component';
-import { RestComponent } from '../../../rest/rest.component';
-import { LoggerInterface } from '../../libs/logger/logger.interface';
+import { DEFAULT_COMMENT_COUNT } from '../../const.js';
 
 @injectable()
 export class CommentService implements CommentServiceInterface {
 
   constructor(
-    @inject(RestComponent.Logger) private readonly logger: LoggerInterface,
     @inject(CommentComponent.CommentModel) private readonly commentModel: types.ModelType<CommentEntity>
   ) {}
 
-  public async create(dto: CreateCommentDTO): Promise<DocumentType<CommentEntity>> {
-    const comment = await this.commentModel.create(dto);
+  public async create(createCommentDTO: CreateCommentDTO): Promise<DocumentType<CommentEntity>> {
+    const savedComment = await this.commentModel.create(createCommentDTO);
+    return savedComment.populate('userId');
+  }
 
-    this.logger.info('');
-
-    return comment.populate('userId');
+  public async findByOfferId(offerId: string, count?: number, offset?: number): Promise<DocumentType<CommentEntity>[]> {
+    const limit = count ?? DEFAULT_COMMENT_COUNT;
+    const skip = offset ?? 0;
+    return this.commentModel
+      .find({offerId}, {limit, skip})
+      .populate('userId');
   }
 }
