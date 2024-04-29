@@ -1,0 +1,571 @@
+openapi: 3.1.0
+info:
+  title: "API сервер для демо-проекта 'Шесть городов'"
+  version: "1.0.0"
+  contact:
+    name: Kirill Oschepkov
+    email: kirill.oschepkov03@gmail.com
+tags:
+  - name: offers
+    description: Действия с предложениями
+  - name: users
+    description: Действия с пользователями
+  - name: comments
+    description: Действия с комментариями
+paths:
+  /register:
+    post:
+      tags:
+        - users
+      summary: Регистрация пользователя
+      description: Регистрирует нового пользователя
+      requestBody:
+        description: Информация для создания нового пользователя
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createUser'
+        required: true
+      responses:
+        "201":
+          description: Пользователь зарегистрирован. Возвращен объект пользователя.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+        "409":
+          description: Пользователь с таким email уже существует.
+
+  /login:
+    get:
+      tags:
+        - users
+      summary: Проверка авторизации пользователя
+      description: Возвращает информацию по авторизованному пользователю
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+
+    post:
+      tags:
+        - users
+      summary: Авторизует пользователя
+      description: Авторизует пользователя по логину и паролю
+      requestBody:
+        description: Информация для авторизации пользователя (логин, пароль)
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/loginData'
+        required: true
+      responses:
+        "200":
+          description: Пользователь успешно авторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+        "401":
+          description: Авторизация не пройдена
+
+  /logout:
+    delete:
+      tags:
+        - users
+      summary: Деавторизует пользователя
+      description: Деавторизует текущего пользователя
+      responses:
+        "200":
+          description: Пользователь успешно деавторизован
+        "401":
+          description: Пользователь не авторизован
+
+  /{userId}/avatar:
+    post:
+      tags:
+        - users
+      summary: Загрузить изображение аватара
+      description: Загружает изображение аватара пользователя. Изображение
+        аватара должно быть в формате `png` или `jpg`.
+      responses:
+        "404":
+          description: Пользователь с указанным id не найден
+
+  /offers:
+    get:
+      tags:
+        - offers
+      summary: Получить список предложений
+      description: Возвращает список доступных предложений для аренды
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/offersList'
+
+    post:
+      tags:
+        - offers
+      summary: Создать новое предложение
+      description: Создает новое предложение
+      requestBody:
+        description: Информация для создания нового предложения
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createOffer'
+        required: true
+      responses:
+        "201":
+          description: Предложение успешно создано. Возвращен объект предложения.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/offer'
+        "422":
+          description: Невозможно создать предложение, некорректное тело запроса
+
+  /offers/{id}:
+    get:
+      tags:
+        - offers
+      summary: Получить предложение по ID
+      description: Возвращает предложений для аренды по его ID
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/offer'
+        "404":
+          description: Предложение с переданным id не найдено
+
+    delete:
+      tags:
+        - offers
+      summary: Удалить предложение
+      description: Удалить предложение с заданным id
+      responses:
+        "204":
+          description: Предложение успешно удалено
+        "404":
+          description: Предложение с переданным id не найдено
+
+    patch:
+      tags:
+        - offers
+      summary: Изменить предложение
+      description: Изменить предложение с заданным id
+      requestBody:
+        description: Информация для изменения предложения
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createOffer'
+        required: true
+      responses:
+        "200":
+          description: Предложение успешно изменено. Объект предложения.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/offer'
+        "404":
+          description: Предложение с переданным id не найдено
+        "422":
+          description: Невозможно изменить предложение, некорректное тело запроса
+
+  /premium:
+    get:
+      tags:
+        - offers
+      summary: Получить список премиум-предложений
+      description: Возвращает список премиум-предложений для аренды
+      parameters:
+        - name: city
+          in: query
+          required: false
+          schema:
+            city:
+            type: string
+            enum:
+              - Paris
+              - Cologne
+              - Brussels
+              - Amsterdam
+              - Hamburg
+              - Dusseldorf
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/offersList'
+
+  /offers/{id}/comments:
+    get:
+      tags:
+        - comments
+      summary: Получить список комментариев для предложения
+      description: Получить список комментариев для предложения с указанным id
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commentsList'
+        "404":
+          description: Предложение с переданным id не найдено
+
+    post:
+      tags:
+        - comments
+      summary: Добавить новый комментарий для предложения
+      description: Добавить новый комментарий для предложения с указанным id
+      responses:
+        "201":
+          description: Комментарий успешно добавлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/comment'
+        "404":
+          description: Предложение с переданным id не найдено
+        "422":
+          description: Невозможно добавить комментарий, некорректное тело запроса
+
+  /favorites:
+    get:
+      tags:
+        - offers
+      summary: Получить список предложений, добавленных в избранное
+      description: Возвращает список предложений для аренды, добавленных в избранное
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/offersList'
+
+  /favorites/{id}:
+    post:
+      tags:
+        - offers
+      summary: Добавить предложение в избранные
+      description: Добавить предложение с указанным id в избранные
+      responses:
+        "200":
+          description: Предложение успешно добавлено в избранные
+        "400":
+          description: Предложение уже является избранным
+        "404":
+          description: Предложение с переданным id не найдено
+
+    delete:
+      tags:
+        - offers
+      summary: Исключить предложение из избранных
+      description: Исключить предложение с указанным id из избранных
+      responses:
+        "200":
+          description: Предложение успешно исключено из избранных
+        "400":
+          description: Предложение не является избранным
+        "404":
+          description: Предложение с переданным id не найдено
+
+components:
+  schemas:
+    loginData:
+      type: object
+      properties:
+        email:
+          type: string
+          example: example@examle.com
+        password:
+          type: string
+          format: password
+          example: qwerty123
+
+    createUser:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Example user
+        email:
+          type: string
+          example: example@examle.com
+        password:
+          type: string
+          format: password
+          example: qwerty123
+        avatar:
+          type: string
+          format: string
+        type:
+          type: string
+          enum:
+            - Common
+            - Pro
+
+    user:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 6329c3d6a04ab1061c6425ea
+        email:
+          type: string
+          example: example@examle.com
+
+    createOffer:
+      type: object
+      properties:
+        title:
+          type: string
+          example: Example offer
+        description:
+          type: string
+          example: Example description
+        city:
+          type: string
+          enum:
+            - Paris
+            - Cologne
+            - Brussels
+            - Amsterdam
+            - Hamburg
+            - Dusseldorf
+          example: Cologne
+        preview:
+          type: string
+          example: example.png
+        pictures:
+          type: array
+          items:
+            type: string
+          example:
+            - example.png
+            - example.jpg
+        isPremium:
+          type: boolean
+        housingType:
+          type: string
+        roomsCount:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 8
+        guestsCount:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 10
+        price:
+          type: number
+          format: int32
+          minimum: 100
+          maximum: 100000
+        facilities:
+          type: array
+          items:
+            type: string
+            enum:
+              - Breakfast
+              - Air conditioning
+              - Laptop friendly workspace
+              - Baby seat
+              - Washer
+              - Towels
+              - Fridge
+        coordinates:
+          type: object
+          properties:
+            latitude:
+              type: number
+              format: double
+            longitude:
+              type: number
+              format: double
+
+    offersList:
+      type: array
+      items:
+        $ref: '#/components/schemas/offerInList'
+
+    offerInList:
+      type: object
+      properties:
+        title:
+          type: string
+          example: Example offer
+        postDate:
+          type: string
+          format: date
+          example: "2020-01-01"
+        city:
+          type: string
+          enum:
+            - Paris
+            - Cologne
+            - Brussels
+            - Amsterdam
+            - Hamburg
+            - Dusseldorf
+          example: Cologne
+        preview:
+          type: string
+          example: example.png
+        isPremium:
+          type: boolean
+        isFavorite:
+          type: boolean
+        rating:
+          type: number
+          format: float
+          minimum: 1
+          maximum: 5
+        housingType:
+          type: string
+        roomsCount:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 8
+        guestsCount:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 10
+        price:
+          type: number
+          format: int32
+          minimum: 100
+          maximum: 100000
+        authorId:
+          type: string
+          example: 6329c3d6a04ab1061c6425ea
+
+    offer:
+      type: object
+      properties:
+        title:
+          type: string
+          example: Example offer
+        description:
+          type: string
+          example: Example description
+        postDate:
+          type: string
+          format: date
+          example: "2020-01-01"
+        city:
+          type: string
+          enum:
+            - Paris
+            - Cologne
+            - Brussels
+            - Amsterdam
+            - Hamburg
+            - Dusseldorf
+          example: Cologne
+        preview:
+          type: string
+          example: example.png
+        pictures:
+          type: array
+          items:
+            type: string
+          example:
+            - example.png
+            - example.jpg
+        isPremium:
+          type: boolean
+        isFavorite:
+          type: boolean
+        rating:
+          type: number
+          format: float
+          minimum: 1
+          maximum: 5
+        housingType:
+          type: string
+        roomsCount:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 8
+        guestsCount:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 10
+        price:
+          type: number
+          format: int32
+          minimum: 100
+          maximum: 100000
+        facilities:
+          type: array
+          items:
+            type: string
+            enum:
+              - Breakfast
+              - Air conditioning
+              - Laptop friendly workspace
+              - Baby seat
+              - Washer
+              - Towels
+              - Fridge
+        authorId:
+          type: string
+          example: 6329c3d6a04ab1061c6425ea
+        coordinates:
+          type: object
+          properties:
+            latitude:
+              type: number
+              format: double
+            longitude:
+              type: number
+              format: double
+
+    createComment:
+      type: object
+      properties:
+        text:
+          type: string
+          minLength: 5
+          maxLength: 1024
+          example: Example offer
+
+    commentsList:
+      type: array
+      items:
+        $ref: '#/components/schemas/comment'
+
+    comment:
+      type: object
+      properties:
+        text:
+          type: string
+          minLength: 5
+          maxLength: 1024
+          example: Example comment
+        postDate:
+          type: string
+          format: date
+          example: "2020-03-03"
+        rating:
+          type: number
+          format: float
+          minimum: 1
+          maximum: 5
+        authorId:
+          type: string
+          example: 6329c3d6a04ab1061c6425ea
