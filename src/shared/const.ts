@@ -69,3 +69,6 @@ export const MAX_GUESTS = 8;
 
 export const DEFAULT_DB_PORT = '27018';
 export const DEFAULT_USER_PASSWORD = 'QWErty321';
+export const DEFAULT_OFFER_COUNT = 60;
+export const PREMIUM_OFFER_COUNT = 3;
+export const DEFAULT_COMMENT_COUNT = 50;
