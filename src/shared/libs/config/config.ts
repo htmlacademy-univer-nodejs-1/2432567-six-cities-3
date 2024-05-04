@@ -1,8 +1,8 @@
 import { config } from 'dotenv';
 import { ConfigInterface } from './config.interface.js';
 import { LoggerInterface } from '../logger/logger.interface.js';
-import { configSchema, ConfigSchema } from './config.schema';
-import { RestComponent } from '../../../rest/rest.component';
+import { configSchema, ConfigSchema } from './config.schema.js';
+import { RestComponent } from '../../../rest/rest.component.js';
 import { inject, injectable } from 'inversify';
 
 @injectable()

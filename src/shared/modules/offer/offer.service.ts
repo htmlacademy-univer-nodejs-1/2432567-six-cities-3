@@ -1,12 +1,12 @@
 import { inject, injectable } from 'inversify';
 import { OfferEntity } from './offer.entity.js';
 import type { DocumentType } from '@typegoose/typegoose';
-import { OfferServiceInterface } from './offer.service.interface';
+import { OfferServiceInterface } from './offer.service.interface.js';
 import { OfferComponent } from './offer.component.js';
-import { RestComponent } from '../../../rest/rest.component';
-import { CreateOfferDto } from './dto/create-offer.dto';
-import { LoggerInterface } from '../../libs/logger/logger.interface';
-import { UpdateOfferDTO } from './dto/update-offer.dto';
+import { RestComponent } from '../../../rest/rest.component.js';
+import { CreateOfferDto } from './dto/create-offer-dto.js';
+import { LoggerInterface } from '../../libs/logger/logger.interface.js';
+import { UpdateOfferDTO } from './dto/update-offer.dto.js';
 import { types } from '@typegoose/typegoose';
 import { DEFAULT_OFFER_COUNT, PREMIUM_OFFER_COUNT } from '../../const.js';
 
@@ -71,7 +71,7 @@ export class OfferService implements OfferServiceInterface {
       .exec();
   }
 
-  public findFavorite(count?: number, offset?: number): Promise<DocumentType<OfferEntity>[] | null> {
+  public findFavoriteOffers(count?: number, offset?: number): Promise<DocumentType<OfferEntity>[] | null> {
     const limit = count ?? DEFAULT_OFFER_COUNT;
     const skip = offset ?? 0;
     return this.offerModel

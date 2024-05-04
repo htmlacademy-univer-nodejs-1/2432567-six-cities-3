@@ -1,11 +1,11 @@
 import { DocumentType, types } from '@typegoose/typegoose';
-import { UserEntity } from './user.entity';
-import { CreateUserDto } from './dto/create-user.dto';
+import { UserEntity } from './user.entity.js';
+import { CreateUserDTO } from './dto/create-user.dto.js';
 import { inject, injectable } from 'inversify';
-import { RestComponent } from '../../../rest/rest.component';
-import { UserServiceInterface } from './user.service.interface';
-import { UserComponent } from './user.component';
-import { LoggerInterface } from '../../libs/logger/logger.interface';
+import { RestComponent } from '../../../rest/rest.component.js';
+import { UserServiceInterface } from './user.service.interface.js';
+import { UserComponent } from './user.component.js';
+import { LoggerInterface } from '../../libs/logger/logger.interface.js';
 
 @injectable()
 export class UserService implements UserServiceInterface {
@@ -15,7 +15,7 @@ export class UserService implements UserServiceInterface {
   ) {
   }
 
-  public async create(dto: CreateUserDto, salt: string): Promise<DocumentType<UserEntity>> {
+  public async create(dto: CreateUserDTO, salt: string): Promise<DocumentType<UserEntity>> {
     const userEntity = new UserEntity(dto);
     userEntity.setPassword(dto.password, salt);
 

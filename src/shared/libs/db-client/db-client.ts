@@ -1,9 +1,9 @@
 import * as Mongoose from 'mongoose';
 import { inject, injectable } from 'inversify';
 import { DBClientInterface } from './db-client.interface.js';
-import { RestComponent } from '../../../rest/rest.component';
+import { RestComponent } from '../../../rest/rest.component.js';
 import { setTimeout } from 'node:timers/promises';
-import { LoggerInterface } from '../logger/logger.interface';
+import { LoggerInterface } from '../logger/logger.interface.js';
 
 const RETRY_COUNT = 5;
 const RETRY_TIMEOUT = 1000;
