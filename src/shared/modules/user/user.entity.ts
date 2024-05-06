@@ -2,7 +2,7 @@ import { User } from '../../types.js';
 import { UserType } from '../../const.js';
 import { defaultClasses, getModelForClass, modelOptions, prop } from '@typegoose/typegoose';
 import { createSHA256 } from '../../utils/hash.js';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserDTO } from './dto/create-user.dto.js';
 
 export interface UserEntity extends defaultClasses.Base {}
 
@@ -62,7 +62,7 @@ export class UserEntity extends defaultClasses.TimeStamps implements User {
   })
   public userType: UserType;
 
-  constructor(user: CreateUserDto) {
+  constructor(user: CreateUserDTO) {
     super();
     this.name = user.name;
     this.email = user.email;

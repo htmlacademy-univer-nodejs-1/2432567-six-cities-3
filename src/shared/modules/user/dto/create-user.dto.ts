@@ -1,6 +1,6 @@
 import { UserType } from '../../../const.js';
 
-export class CreateUserDto {
+export class CreateUserDTO {
   public name: string;
   public email: string;
   public avatarUrl: string;
