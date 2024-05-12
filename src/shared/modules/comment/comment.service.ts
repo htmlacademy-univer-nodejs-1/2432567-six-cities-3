@@ -25,4 +25,9 @@ export class CommentService implements CommentServiceInterface {
       .find({offerId}, {limit, skip})
       .populate('userId');
   }
+
+  public async exists(documentId: string): Promise<boolean> {
+    return (await this.commentModel
+      .exists({_id: documentId})) !== null;
+  }
 }

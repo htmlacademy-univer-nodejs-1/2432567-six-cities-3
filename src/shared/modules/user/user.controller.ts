@@ -16,6 +16,8 @@ import { fillDTO } from '../../utils/fill-dto.js';
 import { UserRDO } from './rdo/user.rdo.js';
 import { LoginUserDTO } from './dto/login-user.dto.js';
 import { ValidateDtoMiddleware } from '../../../rest/middleware/validate-dto.middleware.js';
+import { UploadFileMiddleware } from '../../../rest/middleware/upload-file.middleware.js';
+import { ValidateObjectIdMiddleware } from '../../../rest/middleware/validate-objectid.middleware.js';
 
 export class UserController extends BaseController {
 
@@ -41,7 +43,15 @@ export class UserController extends BaseController {
       middlewares: [new ValidateDtoMiddleware(LoginUserDTO)]
     });
     this.addRoute({ path: '/logout', method: HttpMethod.Delete, handler: this.logout });
-    this.addRoute({ path: '/:userId/avatar', method: HttpMethod.Post, handler: this.uploadAvatar });
+    this.addRoute({
+      path: '/:userId/avatar',
+      method: HttpMethod.Post,
+      handler: this.uploadAvatar,
+      middlewares: [
+        new ValidateObjectIdMiddleware('userId'),
+        new UploadFileMiddleware(this.config.get('UPLOAD_DIRECTORY'), 'avatar'),
+      ]
+    });
   }
 
   public async create(
@@ -99,11 +109,9 @@ export class UserController extends BaseController {
     );
   }
 
-  public async uploadAvatar(): Promise<void> {
-    throw new HttpError(
-      StatusCodes.NOT_IMPLEMENTED,
-      'Not implemented',
-      'UserController'
-    );
+  public async uploadAvatar(req: Request, res: Response) {
+    this.created(res, {
+      filepath: req.file?.path
+    });
   }
 }
