@@ -12,6 +12,7 @@ import { ExceptionFilterInterface } from './errors/exception-filter/exception-fi
 import { DBClientInterface } from '../shared/libs/db-client/db-client.interface.js';
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './config/swagger.js';
+import { CommentComponent } from '../shared/modules/comment/comment.component.js';
 
 
 @injectable()
@@ -25,6 +26,7 @@ export class RestApplication {
     @inject(RestComponent.ExceptionFilter) private readonly exceptionFilter: ExceptionFilterInterface,
     @inject(OfferComponent.OfferController) private readonly offerController: ControllerInterface,
     @inject(UserComponent.UserController) private readonly userController: ControllerInterface,
+    @inject(CommentComponent.CommentController) private readonly commentController: ControllerInterface,
   ) {
     this.server = express();
   }
@@ -44,6 +46,7 @@ export class RestApplication {
   private async _initControllers() {
     this.server.use('/offers', this.offerController.router);
     this.server.use('/users', this.userController.router);
+    this.server.use('/comment', this.commentController.router);
   }
 
   private async _initMiddleware() {
