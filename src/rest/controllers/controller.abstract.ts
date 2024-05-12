@@ -24,7 +24,12 @@ export abstract class BaseController implements ControllerInterface {
 
   public addRoute(route: RouteInterface): void {
     const wrapperAsyncHandler = expressAsyncHandler(route.handler.bind(this));
-    this._router[route.method](route.path, wrapperAsyncHandler);
+    const middlewareHandlers = route.middlewares?.map(
+      (item) => expressAsyncHandler(item.execute.bind(item))
+    );
+    const allHandlers = middlewareHandlers ? [...middlewareHandlers, wrapperAsyncHandler] : wrapperAsyncHandler;
+
+    this._router[route.method](route.path, allHandlers);
     this.pinoLogger.info(`Route registered: ${route.method.toUpperCase()} ${route.path}`);
   }
 
@@ -43,8 +48,8 @@ export abstract class BaseController implements ControllerInterface {
     this.send(res, StatusCodes.CREATED, data);
   }
 
-  public noContent(res: Response): void {
-    this.send(res, StatusCodes.NO_CONTENT, null);
+  public noContent<T>(res: Response, data: T): void {
+    this.send(res, StatusCodes.NO_CONTENT, data);
   }
 
   public notFound(res: Response): void {

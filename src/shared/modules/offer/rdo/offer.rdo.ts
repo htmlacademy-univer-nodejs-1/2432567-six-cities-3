@@ -1,4 +1,5 @@
-import { Expose } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
+import { UserRDO } from '../../user/rdo/user.rdo.js';
 
 type CoordinatesRDO = {
   latitude: number;
@@ -51,6 +52,10 @@ export class OfferRDO {
 
   @Expose()
   public facilities: string[];
+
+  @Expose({ name: 'userId'})
+  @Type(() => UserRDO)
+  public user: UserRDO;
 
   @Expose()
   public commentsCount: number;

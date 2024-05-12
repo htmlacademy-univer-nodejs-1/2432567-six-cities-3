@@ -15,6 +15,7 @@ import { StatusCodes } from 'http-status-codes';
 import { fillDTO } from '../../utils/fill-dto.js';
 import { UserRDO } from './rdo/user.rdo.js';
 import { LoginUserDTO } from './dto/login-user.dto.js';
+import { ValidateDtoMiddleware } from '../../../rest/middleware/validate-dto.middleware.js';
 
 export class UserController extends BaseController {
 
@@ -26,11 +27,21 @@ export class UserController extends BaseController {
     super(pinoLogger);
     this.pinoLogger.info('Register router for UserController');
 
-    this.addRoute({ path: '/register', method: HttpMethod.Post, handler: this.create });
+    this.addRoute({
+      path: '/register',
+      method: HttpMethod.Post,
+      handler: this.create,
+      middlewares: [new ValidateDtoMiddleware(CreateUserDTO)]
+    });
     this.addRoute({ path: '/login', method: HttpMethod.Get, handler: this.getStatus });
-    this.addRoute({ path: '/login', method: HttpMethod.Post, handler: this.login });
+    this.addRoute({
+      path: '/login',
+      method: HttpMethod.Post,
+      handler: this.login,
+      middlewares: [new ValidateDtoMiddleware(LoginUserDTO)]
+    });
     this.addRoute({ path: '/logout', method: HttpMethod.Delete, handler: this.logout });
-    this.addRoute({ path: '/:id/avatar', method: HttpMethod.Post, handler: this.uploadAvatar });
+    this.addRoute({ path: '/:userId/avatar', method: HttpMethod.Post, handler: this.uploadAvatar });
   }
 
   public async create(

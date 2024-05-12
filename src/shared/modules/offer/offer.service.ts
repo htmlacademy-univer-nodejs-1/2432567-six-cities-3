@@ -4,7 +4,7 @@ import type { DocumentType } from '@typegoose/typegoose';
 import { OfferServiceInterface } from './offer.service.interface.js';
 import { OfferComponent } from './offer.component.js';
 import { RestComponent } from '../../../rest/rest.component.js';
-import { CreateOfferDto } from './dto/create-offer-dto.js';
+import { CreateOfferDto } from './dto/create-offer.dto.js';
 import { LoggerInterface } from '../../libs/logger/logger.interface.js';
 import { UpdateOfferDTO } from './dto/update-offer.dto.js';
 import { types } from '@typegoose/typegoose';
