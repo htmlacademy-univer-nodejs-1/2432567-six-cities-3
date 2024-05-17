@@ -13,6 +13,8 @@ import { DBClientInterface } from '../shared/libs/db-client/db-client.interface.
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './config/swagger.js';
 import { CommentComponent } from '../shared/modules/comment/comment.component.js';
+import { AuthComponent } from '../shared/modules/auth/auth.component.js';
+import { ParseTokenMiddleware } from './middleware/parse-token.middleware.js';
 
 
 @injectable()
@@ -23,10 +25,11 @@ export class RestApplication {
     @inject(RestComponent.Logger) private readonly pinoLogger: LoggerInterface,
     @inject(RestComponent.Config) private readonly config: ConfigInterface<ConfigSchema>,
     @inject(RestComponent.DBClient) private readonly dbClient: DBClientInterface,
-    @inject(RestComponent.ExceptionFilter) private readonly exceptionFilter: ExceptionFilterInterface,
+    @inject(RestComponent.ExceptionFilter) private readonly appExceptionFilter: ExceptionFilterInterface,
     @inject(OfferComponent.OfferController) private readonly offerController: ControllerInterface,
     @inject(UserComponent.UserController) private readonly userController: ControllerInterface,
     @inject(CommentComponent.CommentController) private readonly commentController: ControllerInterface,
+    @inject(AuthComponent.AuthExceptionFilter) private readonly authExceptionFilter: ExceptionFilterInterface,
   ) {
     this.server = express();
   }
@@ -50,15 +53,19 @@ export class RestApplication {
   }
 
   private async _initMiddleware() {
+    const authenticateMiddleware = new ParseTokenMiddleware(this.config.get('JWT_SECRET'));
+
     this.server.use(express.json());
     this.server.use(
       '/upload',
       express.static(this.config.get('UPLOAD_DIRECTORY'))
     );
+    this.server.use(authenticateMiddleware.execute.bind(authenticateMiddleware));
   }
 
   private async _initExceptionFilters() {
-    this.server.use(this.exceptionFilter.catch.bind(this.exceptionFilter));
+    this.server.use(this.authExceptionFilter.catch.bind(this.authExceptionFilter));
+    this.server.use(this.appExceptionFilter.catch.bind(this.appExceptionFilter));
   }
 
   private async _initServer() {

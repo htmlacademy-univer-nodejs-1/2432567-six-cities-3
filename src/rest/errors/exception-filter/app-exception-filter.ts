@@ -8,7 +8,7 @@ import { createErrorObject } from '../../../shared/utils/create-error-object.js'
 import { StatusCodes } from 'http-status-codes';
 
 @injectable()
-export class ExceptionFilter implements ExceptionFilterInterface {
+export class AppExceptionFilter implements ExceptionFilterInterface {
 
   constructor(
     @inject(RestComponent.Logger) private readonly pinoLogger: LoggerInterface,

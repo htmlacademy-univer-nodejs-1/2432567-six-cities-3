@@ -15,9 +15,12 @@ import { StatusCodes } from 'http-status-codes';
 import { fillDTO } from '../../utils/fill-dto.js';
 import { UserRDO } from './rdo/user.rdo.js';
 import { LoginUserDTO } from './dto/login-user.dto.js';
-import { ValidateDtoMiddleware } from '../../../rest/middleware/validate-dto.middleware.js';
+import { ValidateDTOMiddleware } from '../../../rest/middleware/validate-dto.middleware.js';
 import { UploadFileMiddleware } from '../../../rest/middleware/upload-file.middleware.js';
 import { ValidateObjectIdMiddleware } from '../../../rest/middleware/validate-objectid.middleware.js';
+import { AuthComponent } from '../auth/auth.component.js';
+import { LoginRDO } from './rdo/login.rdo.js';
+import { AuthService } from '../auth/auth.service.js';
 
 export class UserController extends BaseController {
 
@@ -25,6 +28,7 @@ export class UserController extends BaseController {
     @inject(RestComponent.Logger) protected readonly pinoLogger: PinoLogger,
     @inject(RestComponent.Config) private readonly config: Config,
     @inject(UserComponent.UserService) private readonly userService: UserService,
+    @inject(AuthComponent.AuthService) private readonly authService: AuthService,
   ) {
     super(pinoLogger);
     this.pinoLogger.info('Register router for UserController');
@@ -33,14 +37,14 @@ export class UserController extends BaseController {
       path: '/register',
       method: HttpMethod.Post,
       handler: this.create,
-      middlewares: [new ValidateDtoMiddleware(CreateUserDTO)]
+      middlewares: [new ValidateDTOMiddleware(CreateUserDTO)]
     });
     this.addRoute({ path: '/login', method: HttpMethod.Get, handler: this.getStatus });
     this.addRoute({
       path: '/login',
       method: HttpMethod.Post,
       handler: this.login,
-      middlewares: [new ValidateDtoMiddleware(LoginUserDTO)]
+      middlewares: [new ValidateDTOMiddleware(LoginUserDTO)]
     });
     this.addRoute({ path: '/logout', method: HttpMethod.Delete, handler: this.logout });
     this.addRoute({
@@ -51,6 +55,11 @@ export class UserController extends BaseController {
         new ValidateObjectIdMiddleware('userId'),
         new UploadFileMiddleware(this.config.get('UPLOAD_DIRECTORY'), 'avatar'),
       ]
+    });
+    this.addRoute({
+      path: '/login',
+      method: HttpMethod.Get,
+      handler: this.checkAuthenticate,
     });
   }
 
@@ -82,23 +91,15 @@ export class UserController extends BaseController {
 
   public async login(
     { body }: Request<RequestParams, RequestBody, LoginUserDTO>,
-    _res: Response,
+    res: Response,
   ): Promise<void> {
-    const existsUser = await this.userService.findByEmail(body.email);
-
-    if (!existsUser) {
-      throw new HttpError(
-        StatusCodes.UNAUTHORIZED,
-        `User with email ${body.email} not found.`,
-        'UserController',
-      );
-    }
-
-    throw new HttpError(
-      StatusCodes.NOT_IMPLEMENTED,
-      'Not implemented',
-      'UserController'
-    );
+    const user = await this.authService.verify(body);
+    const token = await this.authService.authenticate(user);
+    const responseData = fillDTO(LoginRDO, {
+      email: user.email,
+      token,
+    });
+    this.ok(res, responseData);
   }
 
   public async logout(): Promise<void> {
@@ -113,5 +114,20 @@ export class UserController extends BaseController {
     this.created(res, {
       filepath: req.file?.path
     });
+  }
+
+  public async checkAuthenticate({ tokenPayload: { email }}: Request, res: Response) {
+    const foundedUser = await this.userService.findByEmail(email);
+
+    if (! foundedUser) {
+      throw new HttpError(
+        StatusCodes.UNAUTHORIZED,
+        'Unauthorized',
+        'UserController'
+      );
+    }
+
+    const responseData = fillDTO(LoginRDO, foundedUser);
+    this.ok(res, responseData);
   }
 }

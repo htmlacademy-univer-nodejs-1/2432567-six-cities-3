@@ -72,3 +72,6 @@ export const DEFAULT_USER_PASSWORD = 'QWErty321';
 export const DEFAULT_OFFER_COUNT = 60;
 export const PREMIUM_OFFER_COUNT = 3;
 export const DEFAULT_COMMENT_COUNT = 50;
+
+export const JWT_ALGORITHM = 'HS256';
+export const JWT_EXPIRED = '2d';

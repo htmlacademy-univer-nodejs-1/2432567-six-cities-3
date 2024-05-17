@@ -15,7 +15,8 @@ import { RequestBody } from '../../../rest/types/request-body.type.js';
 import { OfferComponent } from '../offer/offer.component.js';
 import { OfferService } from '../offer/offer.service.js';
 import { CommentRDO } from './rdo/comment.rdo.js';
-import { ValidateDtoMiddleware } from '../../../rest/middleware/validate-dto.middleware.js';
+import { PrivateRouteMiddleware } from '../../../rest/middleware/private-route.middleware.js';
+import { ValidateDTOMiddleware } from '../../../rest/middleware/validate-dto.middleware.js';
 
 @injectable()
 export default class CommentController extends BaseController {
@@ -32,13 +33,14 @@ export default class CommentController extends BaseController {
       method: HttpMethod.Post,
       handler: this.create,
       middlewares: [
-        new ValidateDtoMiddleware(CreateCommentDTO)
+        new ValidateDTOMiddleware(CreateCommentDTO),
+        new PrivateRouteMiddleware(),
       ]
     });
   }
 
   public async create(
-    { body }: Request<RequestParams, RequestBody, CreateCommentDTO>,
+    { body, tokenPayload }: Request<RequestParams, RequestBody, CreateCommentDTO>,
     res: Response
   ): Promise<void> {
 
@@ -50,7 +52,7 @@ export default class CommentController extends BaseController {
       );
     }
 
-    const comment = await this.commentService.create(body);
+    const comment = await this.commentService.create({ ...body, userId: tokenPayload.id });
     await this.offerService.incCommentCount(body.offerId);
     this.created(res, fillDTO(CommentRDO, comment));
   }
