@@ -10,6 +10,5 @@ export class CreateCommentDTO {
   @IsMongoId({ each: true, message: CreateCommentValidationMessage.offerId.invalidId })
   public offerId: string;
 
-  @IsMongoId({ message: CreateCommentValidationMessage.userId.invalidId })
   public userId: string;
 }

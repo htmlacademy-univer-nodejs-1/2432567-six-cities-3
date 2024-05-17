@@ -6,7 +6,8 @@ import {
   IsArray,
   IsBoolean,
   IsEnum,
-  IsMongoId, IsNumber, IsObject,
+  IsNumber,
+  IsObject,
   IsString,
   Max,
   MaxLength, Min,
@@ -67,7 +68,6 @@ export class CreateOfferDto {
   @IsEnum(Facilities, {message: CreateOfferValidationMessage.facilities.invalidElementFormat})
   public facilities: Facilities[];
 
-  @IsMongoId({ message: CreateOfferValidationMessage.authorId.invalidId })
   public authorId: Ref<UserEntity>;
 
   @IsObject({ message: CreateOfferValidationMessage.coordinates.invalidFormat })

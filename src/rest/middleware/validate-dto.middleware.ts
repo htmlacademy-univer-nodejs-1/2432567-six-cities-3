@@ -4,7 +4,7 @@ import { validate } from 'class-validator';
 import { StatusCodes } from 'http-status-codes';
 import { MiddlewareInterface } from './middleware.interface.js';
 
-export class ValidateDtoMiddleware implements MiddlewareInterface {
+export class ValidateDTOMiddleware implements MiddlewareInterface {
   constructor(private dto: ClassConstructor<object>) {}
 
   public async execute({ body }: Request, res: Response, next: NextFunction): Promise<void> {
