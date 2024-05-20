@@ -3,7 +3,7 @@ import { City, Facilities, HouseType, UserType } from './const.js';
 export type User = {
   name: string;
   email: string;
-  avatarUrl: string;
+  avatarPath: string;
   userType: UserType;
 }
 

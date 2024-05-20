@@ -1,10 +1,10 @@
-import { TsvOfferGenerator } from '../utils/generator/tsv.offer-generator';
+import { TsvOfferGenerator } from '../utils/generator/tsv.offer-generator.js';
 import { MockServerData } from '../types.js';
 import { Command } from './command.interface.js';
 import got from 'got';
-import {TSVFileWriter} from '../utils/file-writer/tsv.file-writer';
+import {TSVFileWriter} from '../utils/file-writer/tsv.file-writer.js';
 import {getErrorMessage} from '../utils/error-message/error-message.js';
-import { ConsoleLogger } from '../../shared/libs/logger/console.logger';
+import { ConsoleLogger } from '../../shared/libs/logger/console.logger.js';
 
 
 export class GenerateCommand implements Command {

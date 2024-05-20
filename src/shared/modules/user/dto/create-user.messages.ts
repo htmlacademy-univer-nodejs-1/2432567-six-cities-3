@@ -6,7 +6,7 @@ export const CreateUserValidationMessages = {
   email: {
     invalidFormat: 'Email must be a valid address'
   },
-  avatarUrl: {
+  avatarPath: {
     invalidFormat: 'AvatarPath is required',
   },
   password: {
