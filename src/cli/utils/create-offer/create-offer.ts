@@ -19,7 +19,7 @@ export function createOffer(offerData: string): Offer {
     facilities,
     name,
     email,
-    avatarUrl,
+    avatarPath,
     password,
     userType,
     coordinates
@@ -28,7 +28,7 @@ export function createOffer(offerData: string): Offer {
   const user = {
     name,
     email,
-    avatarUrl,
+    avatarPath,
     password,
     userType: UserType[userType as UserType],
   } as User;

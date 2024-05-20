@@ -11,9 +11,6 @@ export class CreateUserDTO {
   @IsEmail({}, { message: CreateUserValidationMessages.email.invalidFormat })
   public email: string;
 
-  @IsString({ message: CreateUserValidationMessages.avatarUrl.invalidFormat })
-  public avatarUrl: string;
-
   @IsString({ message: CreateUserValidationMessages.password.invalidFormat })
   @Length(6, 12, { message: CreateUserValidationMessages.password.lengthField })
   public password: string;

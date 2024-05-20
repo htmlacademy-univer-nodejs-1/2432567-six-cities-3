@@ -75,3 +75,17 @@ export const DEFAULT_COMMENT_COUNT = 50;
 
 export const JWT_ALGORITHM = 'HS256';
 export const JWT_EXPIRED = '2d';
+
+export const DEFAULT_AVATAR_FILE_NAME = 'default-avatar.jpg';
+
+export const STATIC_UPLOAD_ROUTE = '/upload';
+export const STATIC_FILES_ROUTE = '/static';
+
+export const DEFAULT_STATIC_IMAGES = [
+  'default-avatar.jpg',
+];
+
+export const STATIC_RESOURCE_FIELDS = [
+  'avatarPath',
+  'image'
+];

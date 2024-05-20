@@ -1,14 +1,14 @@
-import { TsvFileReader } from '../utils/file-reader/tsv.file-reader';
+import { TsvFileReader } from '../utils/file-reader/tsv.file-reader.js';
 import { createOffer } from '../utils/create-offer/create-offer.js';
 import { Command } from './command.interface.js';
-import { UserService } from '../../shared/modules/user/user.service';
-import { OfferService } from '../../shared/modules/offer/offer.service';
+import { UserService } from '../../shared/modules/user/user.service.js';
+import { OfferService } from '../../shared/modules/offer/offer.service.js';
 import { DBClient } from '../../shared/libs/db-client/db-client.js';
-import { ConsoleLogger } from '../../shared/libs/logger/console.logger';
-import { OfferModel } from '../../shared/modules/offer/offer.entity';
-import { UserModel } from '../../shared/modules/user/user.entity';
-import { DBClientInterface } from '../../shared/libs/db-client/db-client.interface';
-import { LoggerInterface } from '../../shared/libs/logger/logger.interface';
+import { ConsoleLogger } from '../../shared/libs/logger/console.logger.js';
+import { OfferModel } from '../../shared/modules/offer/offer.entity.js';
+import { UserModel } from '../../shared/modules/user/user.entity.js';
+import { DBClientInterface } from '../../shared/libs/db-client/db-client.interface.js';
+import { LoggerInterface } from '../../shared/libs/logger/logger.interface.js';
 import { Offer } from '../../shared/types.js';
 import { getMongoURI } from '../../shared/utils/get-url.js';
 import { DEFAULT_DB_PORT, DEFAULT_USER_PASSWORD } from '../../shared/const.js';
@@ -63,7 +63,6 @@ export class ImportCommand implements Command {
       description: offer.description,
       postDate: offer.postDate,
       city: offer.city,
-      preview: offer.preview,
       photos: offer.photos,
       isPremium: offer.isPremium,
       isFavorite: offer.isFavorite,

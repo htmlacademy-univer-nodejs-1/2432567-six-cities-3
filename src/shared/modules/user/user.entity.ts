@@ -44,7 +44,7 @@ export class UserEntity extends defaultClasses.TimeStamps implements User {
     default: '',
     type: () => String
   })
-  public avatarUrl: string;
+  public avatarPath: string;
 
   @prop({
     required: true,
@@ -66,7 +66,6 @@ export class UserEntity extends defaultClasses.TimeStamps implements User {
     super();
     this.name = user.name;
     this.email = user.email;
-    this.avatarUrl = user.avatarUrl;
     this.userType = user.userType;
   }
 

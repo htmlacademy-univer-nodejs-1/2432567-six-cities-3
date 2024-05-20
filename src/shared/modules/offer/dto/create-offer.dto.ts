@@ -32,9 +32,6 @@ export class CreateOfferDto {
   @IsEnum(City, { message: CreateOfferValidationMessage.city.invalidFormat })
   public city: City;
 
-  @MaxLength(256, { message: CreateOfferValidationMessage.preview.maxLength })
-  public preview: string;
-
   @IsArray({ message: CreateOfferValidationMessage.photos.invalidFormat })
   public photos: string[];
 

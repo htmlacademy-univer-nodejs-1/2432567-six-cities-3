@@ -1,7 +1,7 @@
 import { resolve } from 'node:path';
-import { Command } from './command.interface';
+import { Command } from './command.interface.js';
 import { readFileSync } from 'node:fs';
-import { ConsoleLogger } from '../../shared/libs/logger/console.logger';
+import { ConsoleLogger } from '../../shared/libs/logger/console.logger.js';
 
 
 type TPackageJSONConfig = {

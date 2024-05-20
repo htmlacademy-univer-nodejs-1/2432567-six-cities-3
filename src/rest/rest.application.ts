@@ -2,6 +2,7 @@ import { LoggerInterface } from '../shared/libs/logger/logger.interface.js';
 import {ConfigInterface} from '../shared/libs/config/config.interface.js';
 import { ConfigSchema } from '../shared/libs/config/config.schema.js';
 import { inject, injectable } from 'inversify';
+import cors from 'cors';
 import { RestComponent } from './rest.component.js';
 import { getMongoURI } from '../shared/utils/get-url.js';
 import express, { Express } from 'express';
@@ -15,6 +16,8 @@ import swaggerSpec from './config/swagger.js';
 import { CommentComponent } from '../shared/modules/comment/comment.component.js';
 import { AuthComponent } from '../shared/modules/auth/auth.component.js';
 import { ParseTokenMiddleware } from './middleware/parse-token.middleware.js';
+import { getFullServerPath } from '../shared/utils/full-server-path.js';
+import { STATIC_FILES_ROUTE, STATIC_UPLOAD_ROUTE } from '../shared/const.js';
 
 
 @injectable()
@@ -26,6 +29,8 @@ export class RestApplication {
     @inject(RestComponent.Config) private readonly config: ConfigInterface<ConfigSchema>,
     @inject(RestComponent.DBClient) private readonly dbClient: DBClientInterface,
     @inject(RestComponent.ExceptionFilter) private readonly appExceptionFilter: ExceptionFilterInterface,
+    @inject(RestComponent.HttpExceptionFilter) private readonly httpExceptionFilter: ExceptionFilterInterface,
+    @inject(RestComponent.ValidationExceptionFilter) private readonly validationExceptionFilter: ExceptionFilterInterface,
     @inject(OfferComponent.OfferController) private readonly offerController: ControllerInterface,
     @inject(UserComponent.UserController) private readonly userController: ControllerInterface,
     @inject(CommentComponent.CommentController) private readonly commentController: ControllerInterface,
@@ -57,15 +62,22 @@ export class RestApplication {
 
     this.server.use(express.json());
     this.server.use(
-      '/upload',
+      STATIC_UPLOAD_ROUTE,
       express.static(this.config.get('UPLOAD_DIRECTORY'))
     );
+    this.server.use(
+      STATIC_FILES_ROUTE,
+      express.static(this.config.get('STATIC_DIRECTORY_PATH'))
+    );
     this.server.use(authenticateMiddleware.execute.bind(authenticateMiddleware));
+    this.server.use(cors());
   }
 
   private async _initExceptionFilters() {
     this.server.use(this.authExceptionFilter.catch.bind(this.authExceptionFilter));
-    this.server.use(this.appExceptionFilter.catch.bind(this.appExceptionFilter));
+    this.server.use(this.validationExceptionFilter.catch.bind(this.validationExceptionFilter));
+    this.server.use(this.httpExceptionFilter.catch.bind(this.httpExceptionFilter));
+    this.server.use(this.appExceptionFilter.catch.bind(this.appExceptionFilter)); // last
   }
 
   private async _initServer() {
@@ -95,6 +107,6 @@ export class RestApplication {
 
     this.pinoLogger.info('Try to init server…');
     await this._initServer();
-    this.pinoLogger.info(`Server started on http://localhost:${this.config.get('PORT')}`);
+    this.pinoLogger.info(`Server started on ${getFullServerPath(this.config.get('HOST'), this.config.get('PORT'))}`);
   }
 }
