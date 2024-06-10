@@ -6,10 +6,13 @@ export class CommentRDO {
   public id: string;
 
   @Expose()
-  public text: string;
+  public comment: string;
 
   @Expose({ name: 'createdAt'})
   public postDate: string;
+
+  @Expose()
+  public rating: number;
 
   @Expose({ name: 'userId'})
   @Type(() => UserRDO)

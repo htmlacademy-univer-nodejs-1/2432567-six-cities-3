@@ -1,10 +1,9 @@
 import { inject, injectable } from 'inversify';
-import { StatusCodes } from 'http-status-codes';
 import { NextFunction, Request, Response } from 'express';
 import { ExceptionFilterInterface } from './exception-filter.interface.js';
 import { RestComponent } from '../../rest.component.js';
 import { PinoLogger } from '../../../shared/libs/logger/pino.logger.js';
-import { HttpError } from '../http-error.js';
+import { HttpError } from '../exceptions/http-error.js';
 import { createErrorObject } from '../../../shared/utils/create-error-object.js';
 import { ApplicationError } from '../../types/application-errors.enum.js';
 
@@ -25,7 +24,7 @@ export class HttpErrorExceptionFilter implements ExceptionFilterInterface {
     this.pinoLogger.error(`[HttpErrorException]: ${req.path} # ${error.message}`, error);
 
     res
-      .status(StatusCodes.BAD_REQUEST)
+      .status(error.httpStatusCode)
       .json(createErrorObject(ApplicationError.CommonError, error.message));
   }
 }

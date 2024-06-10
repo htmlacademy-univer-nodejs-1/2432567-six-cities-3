@@ -12,8 +12,8 @@ import { TokenPayload } from './types/token-payload.js';
 import { SignJWT } from 'jose';
 import { JWT_ALGORITHM, JWT_EXPIRED } from '../../const.js';
 import { LoginUserDTO } from '../user/dto/login-user.dto.js';
-import { UserNotFoundException } from '../errors/user-not-found.exception.js';
-import { UserPasswordIncorrectException } from '../errors/user-password-incorrect.exception.js';
+import { UserNotFoundException } from '../../../rest/errors/exceptions/user-not-found.exception.js';
+import { UserPasswordIncorrectException } from '../../../rest/errors/exceptions/user-password-incorrect.exception.js';
 
 @injectable()
 export class AuthService implements AuthServiceInterface {
@@ -42,12 +42,12 @@ export class AuthService implements AuthServiceInterface {
 
   public async verify(dto: LoginUserDTO): Promise<UserEntity> {
     const user = await this.userService.findByEmail(dto.email);
-    if (! user) {
+    if (!user) {
       this.pinoLogger.warn(`User with ${dto.email} not found`);
       throw new UserNotFoundException();
     }
 
-    if (! user.verifyPassword(dto.password, this.config.get('SALT'))) {
+    if (!user.verifyPassword(dto.password, this.config.get('SALT'))) {
       this.pinoLogger.warn(`Incorrect password for ${dto.email}`);
       throw new UserPasswordIncorrectException();
     }

@@ -14,8 +14,7 @@ const DEFAULT_CONTENT_TYPE = 'application/json';
 export abstract class BaseController implements ControllerInterface {
   private readonly _router: Router;
 
-  @inject(RestComponent.PathTransformer)
-  private pathTranformer: PathTransformer;
+  @inject(RestComponent.PathTransformer) private pathTranformer: PathTransformer;
 
   constructor(
     protected readonly pinoLogger: PinoLogger

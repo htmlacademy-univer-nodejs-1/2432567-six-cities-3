@@ -7,7 +7,7 @@ import { CommentComponent } from './comment.component.js';
 import { CommentService } from './comment.service.js';
 import { RestComponent } from '../../../rest/rest.component.js';
 import { HttpMethod } from '../../../rest/types/http-method.enum.js';
-import { HttpError } from '../../../rest/errors/http-error.js';
+import { HttpError } from '../../../rest/errors/exceptions/http-error.js';
 import { fillDTO } from '../../utils/fill-dto.js';
 import { RequestParams } from '../../../rest/types/request-params.type.js';
 import { CreateCommentDTO } from './dto/create-comment.dto.js';

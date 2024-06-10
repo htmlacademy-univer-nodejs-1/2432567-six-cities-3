@@ -1,9 +1,9 @@
 import { inject, injectable } from 'inversify';
 import { NextFunction, Request, Response } from 'express';
-import { RestComponent } from '../../../rest/rest.component.js';
-import { PinoLogger } from '../../libs/logger/pino.logger.js';
-import { BaseUserException } from '../errors/base-user.exception.js';
-import { ExceptionFilterInterface } from '../../../rest/errors/exception-filter/exception-filter.interface';
+import { RestComponent } from '../../rest.component.js';
+import { PinoLogger } from '../../../shared/libs/logger/pino.logger.js';
+import { BaseUserException } from '../exceptions/base-user.exception.js';
+import { ExceptionFilterInterface } from './exception-filter.interface.js';
 
 
 @injectable()

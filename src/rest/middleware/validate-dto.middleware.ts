@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { ClassConstructor, plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { MiddlewareInterface } from './middleware.interface.js';
-import { ValidationError } from '../errors/validation.error.js';
+import { ValidationError } from '../errors/exceptions/validation.error.js';
 import { reduceValidationErrors } from '../../shared/utils/reduce-validation-errors.js';
 
 export class ValidateDTOMiddleware implements MiddlewareInterface {

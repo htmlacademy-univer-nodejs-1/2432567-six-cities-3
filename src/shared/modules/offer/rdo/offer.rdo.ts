@@ -1,7 +1,7 @@
 import { Expose, Type } from 'class-transformer';
 import { UserRDO } from '../../user/rdo/user.rdo.js';
 
-type CoordinatesRDO = {
+type LocationRDO = {
   latitude: number;
   longitude: number;
 }
@@ -24,10 +24,10 @@ export class OfferRDO {
   public city: string;
 
   @Expose()
-  public preview: string;
+  public previewImage: string;
 
   @Expose()
-  public photos: string[];
+  public images: string[];
 
   @Expose()
   public isPremium: boolean;
@@ -51,7 +51,7 @@ export class OfferRDO {
   public price: number;
 
   @Expose()
-  public facilities: string[];
+  public goods: string[];
 
   @Expose({ name: 'userId'})
   @Type(() => UserRDO)
@@ -61,5 +61,5 @@ export class OfferRDO {
   public commentsCount: number;
 
   @Expose()
-  public coordinates: CoordinatesRDO;
+  public location: LocationRDO;
 }

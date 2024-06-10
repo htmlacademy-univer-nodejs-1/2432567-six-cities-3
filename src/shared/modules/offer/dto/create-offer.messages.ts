@@ -43,10 +43,8 @@ export const CreateOfferValidationMessage = {
     min: 'Minimum price must be 100',
     max: 'Maximum price must be 100000',
   },
-  facilities: {
+  goods: {
     invalidFormat: 'Must be an array',
-    invalidElementFormat:
-      'Element must be one of Breakfast, Air conditioning, Laptop friendly workspace, Baby seat, Washer, Towels, Fridge',
   },
   authorId: {
     invalidId: 'AuthorId field must be a valid id',

@@ -1,42 +1,51 @@
-export enum City {
-  Paris = 'Paris',
-  Cologne = 'Cologne',
-  Brussels = 'Brussels',
-  Amsterdam = 'Amsterdam',
-  Hamburg = 'Hamburg',
-  Dusseldorf = 'Dusseldorf'
-}
+import { City, Location } from './types.js';
 
-export enum CityCoordinates {
-  Paris = '48.85661;2.351499',
-  Cologne = '50.938361;6.959974',
-  Brussels = '50.846557;4.351697',
-  Amsterdam = '52.370216;4.895168',
-  Hamburg = '53.550341;10.000654',
-  Dusseldorf = '53.550341;10.000654'
-}
+export const CITIES = [
+  'Paris',
+  'Cologne',
+  'Brussels',
+  'Amsterdam',
+  'Hamburg',
+  'Dusseldorf',
+];
 
-export enum Facilities {
-  Breakfast = 'Breakfast',
-  AirConditioning = 'Air conditioning',
-  LaptopFriendlyWorkspace = 'Laptop friendly workspace',
-  BabySeat = 'Baby seat',
-  Washer = 'Washer',
-  Towels = 'Towels',
-  Fridge = 'Fridge'
-}
+export const CityLocation: { [key in City]: Location } = {
+  Paris: {
+    latitude: 48.85661,
+    longitude: 2.351499,
+  },
+  Cologne: {
+    latitude: 50.938361,
+    longitude: 6.959974,
+  },
+  Brussels: {
+    latitude: 50.846557,
+    longitude: 4.351697,
+  },
+  Amsterdam: {
+    latitude: 52.37454,
+    longitude: 4.897976,
+  },
+  Hamburg: {
+    latitude: 53.550341,
+    longitude: 10.000654,
+  },
+  Dusseldorf: {
+    latitude: 51.225402,
+    longitude: 6.776314,
+  },
+};
 
-export enum HouseType {
-  apartment = 'apartment',
-  house = 'house',
-  room = 'room',
-  hotel = 'hotel'
-}
-
-export enum UserType {
-  pro = 'pro',
-  normal = 'normal'
-}
+export const GOODS = [
+  'Breakfast',
+  'Air conditioning',
+  'Laptop friendly workspace',
+  'Baby seat',
+  'Washer',
+  'Towels',
+  'Fridge',
+];
+export const TYPES = ['Apartment', 'Room', 'House', 'Hotel'];
 
 export const MIN_LENGTH_NAME = 1;
 export const MAX_LENGTH_NAME = 15;
@@ -76,13 +85,15 @@ export const DEFAULT_COMMENT_COUNT = 50;
 export const JWT_ALGORITHM = 'HS256';
 export const JWT_EXPIRED = '2d';
 
-export const DEFAULT_AVATAR_FILE_NAME = 'default-avatar.jpg';
+export const DEFAULT_AVATAR_FILE_NAME = 'default-avatar.jpeg';
+export const DEFAULT_PREVIEW_FILE_NAME = 'default-preview.jpeg';
+
 
 export const STATIC_UPLOAD_ROUTE = '/upload';
 export const STATIC_FILES_ROUTE = '/static';
 
 export const DEFAULT_STATIC_IMAGES = [
-  'default-avatar.jpg',
+  'default-avatar.jpeg',
 ];
 
 export const STATIC_RESOURCE_FIELDS = [

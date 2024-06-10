@@ -1,11 +1,12 @@
 import { StatusCodes } from 'http-status-codes';
 import { NextFunction, Request, Response } from 'express';
 import { MiddlewareInterface } from './middleware.interface.js';
-import { HttpError } from '../errors/http-error.js';
+import { HttpError } from '../errors/exceptions/http-error.js';
 
 export class PrivateRouteMiddleware implements MiddlewareInterface {
   public async execute({ tokenPayload }: Request, _res: Response, next: NextFunction): Promise<void> {
-    if (! tokenPayload) {
+
+    if (!tokenPayload) {
       throw new HttpError(
         StatusCodes.UNAUTHORIZED,
         'Unauthorized',

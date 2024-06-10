@@ -1,5 +1,5 @@
-import { City, Facilities, HouseType } from '../../../const.js';
-import { Coordinates } from '../../../types.js';
+import { CITIES, TYPES } from '../../../const.js';
+import { City, Goods, HouseType, Location } from '../../../types.js';
 import { UserEntity } from '../../user/user.entity.js';
 import { Ref } from '@typegoose/typegoose';
 import {
@@ -15,7 +15,7 @@ import {
 } from 'class-validator';
 import { CreateOfferValidationMessage } from './create-offer.messages.js';
 
-export class CreateOfferDto {
+export class CreateOfferDTO {
 
   @IsString({ message: CreateOfferValidationMessage.title.invalidFormat })
   @MinLength(10, { message: CreateOfferValidationMessage.title.minLength })
@@ -29,21 +29,15 @@ export class CreateOfferDto {
 
   public postDate: Date;
 
-  @IsEnum(City, { message: CreateOfferValidationMessage.city.invalidFormat })
+  @IsEnum(CITIES, { message: CreateOfferValidationMessage.city.invalidFormat })
   public city: City;
 
-  @IsArray({ message: CreateOfferValidationMessage.photos.invalidFormat })
-  public photos: string[];
+  public previewImage: string;
 
   @IsBoolean({message: CreateOfferValidationMessage.isPremium.invalidFormat})
   public isPremium: boolean;
 
-  @IsBoolean({message: CreateOfferValidationMessage.isFavorite.invalidFormat})
-  public isFavorite: boolean;
-
-  public rating: number;
-
-  @IsEnum(HouseType, {message: CreateOfferValidationMessage.houseType.invalidFormat})
+  @IsEnum(TYPES, {message: CreateOfferValidationMessage.houseType.invalidFormat})
   public houseType: HouseType;
 
   @IsNumber({}, { message: CreateOfferValidationMessage.countRooms.invalidFormat })
@@ -61,12 +55,11 @@ export class CreateOfferDto {
   @Max(100000, { message: CreateOfferValidationMessage.price.max })
   public price: number;
 
-  @IsArray({ message: CreateOfferValidationMessage.facilities.invalidFormat })
-  @IsEnum(Facilities, {message: CreateOfferValidationMessage.facilities.invalidElementFormat})
-  public facilities: Facilities[];
+  @IsArray({ message: CreateOfferValidationMessage.goods.invalidFormat })
+  public goods: Goods[];
 
-  public authorId: Ref<UserEntity>;
+  public userId: Ref<UserEntity>;
 
   @IsObject({ message: CreateOfferValidationMessage.coordinates.invalidFormat })
-  public coordinates: Coordinates;
+  public location: Location;
 }

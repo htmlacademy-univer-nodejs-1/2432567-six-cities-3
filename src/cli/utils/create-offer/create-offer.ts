@@ -1,5 +1,4 @@
-import { City, Facilities, HouseType, UserType } from '../../../shared/const.js';
-import { Coordinates, Offer, User } from '../../../shared/types.js';
+import { City, Goods, HouseType, Location, Offer, User } from '../../../shared/types.js';
 
 export function createOffer(offerData: string): Offer {
   const [
@@ -7,22 +6,22 @@ export function createOffer(offerData: string): Offer {
     description,
     postDate,
     city,
-    preview,
-    photos,
+    previewImage,
+    images,
     isPremium,
     isFavorite,
     rating,
-    type,
+    houseType,
     countRooms,
     countGuests,
     price,
-    facilities,
+    goods,
     name,
     email,
     avatarPath,
     password,
-    userType,
-    coordinates
+    isPro,
+    location
   ] = offerData.replace('\n', '').split('\t');
 
   const user = {
@@ -30,30 +29,30 @@ export function createOffer(offerData: string): Offer {
     email,
     avatarPath,
     password,
-    userType: UserType[userType as UserType],
+    isPro: Boolean(isPro),
   } as User;
 
-  const [latitude, longitude] = coordinates.split(';');
+  const [latitude, longitude] = location.split(';');
 
   return {
     title,
     description,
     postDate: new Date(postDate),
-    city: City[city as City],
-    preview,
-    photos: photos.split(';'),
+    city: city as City,
+    previewImage,
+    images: images.split(';'),
     isPremium: Boolean(isPremium),
     isFavorite: Boolean(isFavorite),
     rating: Number(rating),
-    houseType: HouseType[type as HouseType],
+    houseType: houseType as HouseType,
     countRooms: Number(countRooms),
     countGuests: Number(countGuests),
     price: Number(price),
-    facilities: facilities.split(';') as Facilities[],
-    author: user,
-    coordinates: {
+    goods: goods.split(';') as Goods[],
+    user: user,
+    location: {
       latitude: Number(latitude),
       longitude: Number(longitude)
-    } as Coordinates,
+    } as Location,
   };
 }

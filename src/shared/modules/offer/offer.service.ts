@@ -4,7 +4,7 @@ import type { DocumentType } from '@typegoose/typegoose';
 import { OfferServiceInterface } from './offer.service.interface.js';
 import { OfferComponent } from './offer.component.js';
 import { RestComponent } from '../../../rest/rest.component.js';
-import { CreateOfferDto } from './dto/create-offer.dto.js';
+import { CreateOfferDTO } from './dto/create-offer-dto.js';
 import { LoggerInterface } from '../../libs/logger/logger.interface.js';
 import { UpdateOfferDTO } from './dto/update-offer.dto.js';
 import { types } from '@typegoose/typegoose';
@@ -19,7 +19,7 @@ export class OfferService implements OfferServiceInterface {
     @inject(OfferComponent.OfferModel) private readonly offerModel: types.ModelType<OfferEntity>
   ) {}
 
-  public async create(createOfferDTO: CreateOfferDto): Promise<DocumentType<OfferEntity>> {
+  public async create(createOfferDTO: CreateOfferDTO): Promise<DocumentType<OfferEntity>> {
     const result = await this.offerModel.create(createOfferDTO);
     this.pinoLogger.info(`New offer created: ${createOfferDTO.title} (${result._id})`);
 
@@ -59,7 +59,10 @@ export class OfferService implements OfferServiceInterface {
   public findAll(count?: number, offset?: number): Promise<DocumentType<OfferEntity>[]> {
     const limit = count ?? DEFAULT_OFFER_COUNT;
     const skip = offset ?? 0;
-    return this.offerModel.find({limit, skip});
+    return this.offerModel
+      .find()
+      .skip(skip)
+      .limit(limit);
   }
 
   public findByCityAndPremium(city: string, count?: number, offset?: number): Promise<DocumentType<OfferEntity>[] | null> {
