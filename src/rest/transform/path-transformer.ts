@@ -47,13 +47,8 @@ export class PathTransformer {
           }
 
           if (this.isStaticProperty(key) && typeof value === 'string') {
-            const staticPath = STATIC_FILES_ROUTE;
-            const uploadPath = STATIC_UPLOAD_ROUTE;
-            const serverHost = this.config.get('HOST');
-            const serverPort = this.config.get('PORT');
-
-            const rootPath = this.hasDefaultImage(value) ? staticPath : uploadPath;
-            current[key] = `${getFullServerPath(serverHost, serverPort)}${rootPath}/${value}`;
+            const rootPath = this.hasDefaultImage(value) ? STATIC_FILES_ROUTE : STATIC_UPLOAD_ROUTE;
+            current[key] = `${getFullServerPath(this.config.get('HOST'), this.config.get('PORT'))}${rootPath}/${value}`;
           }
         }
       }

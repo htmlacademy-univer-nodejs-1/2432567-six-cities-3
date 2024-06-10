@@ -1,20 +1,25 @@
-import { City, Facilities, HouseType, UserType } from './const.js';
+import { CITIES, GOODS, TYPES } from './const.js';
+
+export type City = typeof CITIES[number];
+export type HouseType = typeof TYPES[number];
+export type Goods = typeof GOODS[number]
 
 export type User = {
   name: string;
   email: string;
   avatarPath: string;
-  userType: UserType;
+  isPro: boolean;
 }
 
 export type Comment = {
-  text: string;
-  date: string;
+  id: string;
+  comment: string;
+  postDate: string;
   rating: number;
-  author: User;
-}
+  user: User;
+};
 
-export type Coordinates = {
+export type Location = {
   latitude: number;
   longitude: number;
 }
@@ -24,8 +29,8 @@ export type Offer = {
   description: string;
   postDate: Date;
   city: City,
-  preview: string,
-  photos: string[],
+  previewImage: string,
+  images: string[],
   isPremium: boolean,
   isFavorite: boolean,
   rating: number,
@@ -33,7 +38,7 @@ export type Offer = {
   countRooms: number,
   countGuests: number,
   price: number,
-  facilities: Facilities[],
-  author: User,
-  coordinates: Coordinates,
+  goods: Goods[],
+  user: User,
+  location: Location,
 }

@@ -1,5 +1,4 @@
-import { UserType } from '../../../const.js';
-import { IsEmail, IsString, Length } from 'class-validator';
+import { IsBoolean, IsEmail, IsString, Length } from 'class-validator';
 import { CreateUserValidationMessages } from './create-user.messages.js';
 
 export class CreateUserDTO {
@@ -15,6 +14,6 @@ export class CreateUserDTO {
   @Length(6, 12, { message: CreateUserValidationMessages.password.lengthField })
   public password: string;
 
-  // todo
-  public userType: UserType;
+  @IsBoolean({ message: CreateUserValidationMessages.isPro.invalidFormat })
+  public isPro: boolean;
 }

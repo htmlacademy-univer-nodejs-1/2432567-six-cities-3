@@ -10,19 +10,18 @@ import { Request, Response } from 'express';
 import { RequestParams } from '../../../rest/types/request-params.type.js';
 import { RequestBody } from '../../../rest/types/request-body.type.js';
 import { CreateUserDTO } from './dto/create-user.dto.js';
-import { HttpError } from '../../../rest/errors/http-error.js';
+import { HttpError } from '../../../rest/errors/exceptions/http-error.js';
 import { StatusCodes } from 'http-status-codes';
 import { fillDTO } from '../../utils/fill-dto.js';
 import { UserRDO } from './rdo/user.rdo.js';
 import { LoginUserDTO } from './dto/login-user.dto.js';
 import { ValidateDTOMiddleware } from '../../../rest/middleware/validate-dto.middleware.js';
 import { UploadFileMiddleware } from '../../../rest/middleware/upload-file.middleware.js';
-import { ValidateObjectIdMiddleware } from '../../../rest/middleware/validate-objectid.middleware.js';
 import { AuthComponent } from '../auth/auth.component.js';
 import { LoginRDO } from './rdo/login.rdo.js';
 import { AuthService } from '../auth/auth.service.js';
 import { UploadUserAvatarRDO } from './rdo/upload-user-avatar.rdo.js';
-import { ParamUserId } from './types/param-userid.type.js';
+import { PrivateRouteMiddleware } from '../../../rest/middleware/private-route.middleware.js';
 
 export class UserController extends BaseController {
 
@@ -41,27 +40,32 @@ export class UserController extends BaseController {
       handler: this.create,
       middlewares: [new ValidateDTOMiddleware(CreateUserDTO)]
     });
-    this.addRoute({ path: '/login', method: HttpMethod.Get, handler: this.getStatus });
     this.addRoute({
       path: '/login',
       method: HttpMethod.Post,
       handler: this.login,
       middlewares: [new ValidateDTOMiddleware(LoginUserDTO)]
     });
-    this.addRoute({ path: '/logout', method: HttpMethod.Delete, handler: this.logout });
-    this.addRoute({
-      path: '/:userId/avatar',
-      method: HttpMethod.Post,
-      handler: this.uploadAvatar,
-      middlewares: [
-        new ValidateObjectIdMiddleware('userId'),
-        new UploadFileMiddleware(this.config.get('UPLOAD_DIRECTORY'), 'avatar'),
-      ]
-    });
     this.addRoute({
       path: '/login',
       method: HttpMethod.Get,
       handler: this.checkAuthenticate,
+      middlewares: [new PrivateRouteMiddleware()]
+    });
+    this.addRoute({
+      path: '/logout',
+      method: HttpMethod.Delete,
+      handler: this.logout,
+      middlewares: [new PrivateRouteMiddleware()]
+    });
+    this.addRoute({
+      path: '/avatar',
+      method: HttpMethod.Post,
+      handler: this.uploadAvatar,
+      middlewares: [
+        new PrivateRouteMiddleware(),
+        new UploadFileMiddleware(this.config.get('UPLOAD_DIRECTORY'), 'avatar'),
+      ]
     });
   }
 
@@ -79,16 +83,8 @@ export class UserController extends BaseController {
       );
     }
 
-    const result = await this.userService.create(body, this.config.get('SALT'));
-    this.created(res, fillDTO(UserRDO, result));
-  }
-
-  public async getStatus(): Promise<void> {
-    throw new HttpError(
-      StatusCodes.NOT_IMPLEMENTED,
-      'Not implemented',
-      'UserController'
-    );
+    const newUser = await this.userService.create(body, this.config.get('SALT'));
+    this.created(res, fillDTO(UserRDO, newUser));
   }
 
   public async login(
@@ -101,6 +97,12 @@ export class UserController extends BaseController {
     this.ok(res, Object.assign(responseData, { token }));
   }
 
+  public async checkAuthenticate({ tokenPayload: { email }}: Request, res: Response) {
+    const user = await this.userService.findByEmail(email);
+    const responseData = fillDTO(LoginRDO, user);
+    this.ok(res, responseData);
+  }
+
   public async logout(): Promise<void> {
     throw new HttpError(
       StatusCodes.NOT_IMPLEMENTED,
@@ -109,26 +111,10 @@ export class UserController extends BaseController {
     );
   }
 
-  public async uploadAvatar({ params, file }: Request<ParamUserId>, res: Response) {
-    const { userId } = params;
+  public async uploadAvatar({ file, tokenPayload }: Request, res: Response) {
     const uploadFile = { avatarPath: file?.filename };
-    await this.userService.updateById(userId, uploadFile);
+    await this.userService.updateById(tokenPayload.id, uploadFile);
     const responseData = fillDTO(UploadUserAvatarRDO, { filepath: uploadFile.avatarPath });
     this.created(res, responseData);
-  }
-
-  public async checkAuthenticate({ tokenPayload: { email }}: Request, res: Response) {
-    const foundedUser = await this.userService.findByEmail(email);
-
-    if (! foundedUser) {
-      throw new HttpError(
-        StatusCodes.UNAUTHORIZED,
-        'Unauthorized',
-        'UserController'
-      );
-    }
-
-    const responseData = fillDTO(LoginRDO, foundedUser);
-    this.ok(res, responseData);
   }
 }

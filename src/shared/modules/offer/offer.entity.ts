@@ -1,6 +1,6 @@
-import { Coordinates, Offer, User } from '../../types.js';
-import { defaultClasses, getModelForClass, modelOptions, prop, Severity } from '@typegoose/typegoose';
-import { City, Facilities, HouseType } from '../../const.js';
+import { City, Goods, HouseType, Location } from '../../types.js';
+import { defaultClasses, getModelForClass, modelOptions, prop, Ref, Severity } from '@typegoose/typegoose';
+import { CITIES, TYPES } from '../../const.js';
 import { UserEntity } from '../user/user.entity.js';
 
 export interface OfferEntity extends defaultClasses.Base {}
@@ -12,9 +12,10 @@ export interface OfferEntity extends defaultClasses.Base {}
   },
   schemaOptions: {
     collection: 'offers',
+    timestamps: true,
   }
 })
-export class OfferEntity extends defaultClasses.TimeStamps implements Offer {
+export class OfferEntity extends defaultClasses.TimeStamps {
 
   @prop({
     required: true,
@@ -42,7 +43,7 @@ export class OfferEntity extends defaultClasses.TimeStamps implements Offer {
 
   @prop({
     required: true,
-    enum: City,
+    enum: CITIES,
     type: () => String,
   })
   public city: City;
@@ -51,14 +52,14 @@ export class OfferEntity extends defaultClasses.TimeStamps implements Offer {
     required: true,
     type: () => String,
   })
-  public preview: string;
+  public previewImage: string;
 
   @prop({
     required: true,
     default: [],
     type: () => Array<string>,
   })
-  public photos: string[];
+  public images: string[];
 
   @prop({
     required: true,
@@ -68,6 +69,7 @@ export class OfferEntity extends defaultClasses.TimeStamps implements Offer {
 
   @prop({
     required: true,
+    default: false,
     type: () => Boolean,
   })
   public isFavorite: boolean;
@@ -76,13 +78,14 @@ export class OfferEntity extends defaultClasses.TimeStamps implements Offer {
     required: true,
     min: [1, 'Min value for rating is 1'],
     max: [5, 'Max value for rating is 5'],
+    default: 1,
     type: () => Number,
   })
   public rating: number;
 
   @prop({
     required: true,
-    enum: HouseType,
+    enum: TYPES,
     type: () => String,
   })
   public houseType: HouseType;
@@ -115,13 +118,13 @@ export class OfferEntity extends defaultClasses.TimeStamps implements Offer {
     required: true,
     type: () => Array<string>
   })
-  public facilities: Facilities[];
+  public goods: Goods[];
 
   @prop({
     required: true,
     ref: UserEntity,
   })
-  public author: User;
+  public userId: Ref<UserEntity>;
 
   @prop({
     default: 0,
@@ -133,7 +136,7 @@ export class OfferEntity extends defaultClasses.TimeStamps implements Offer {
     required: true,
     type: () => Object
   })
-  public coordinates: Coordinates;
+  public location: Location;
 }
 
 export const OfferModel = getModelForClass(OfferEntity);

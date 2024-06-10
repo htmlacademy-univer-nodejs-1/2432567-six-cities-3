@@ -1,8 +1,6 @@
 import { User } from '../../types.js';
-import { UserType } from '../../const.js';
 import { defaultClasses, getModelForClass, modelOptions, prop } from '@typegoose/typegoose';
 import { createSHA256 } from '../../utils/hash.js';
-import { CreateUserDTO } from './dto/create-user.dto.js';
 
 export interface UserEntity extends defaultClasses.Base {}
 
@@ -48,8 +46,6 @@ export class UserEntity extends defaultClasses.TimeStamps implements User {
 
   @prop({
     required: true,
-    minlength: [6, 'Min length for password is 6'],
-    maxlength: [12, 'Max length for password is 12'],
     default: '',
     type: () => String
   })
@@ -57,16 +53,17 @@ export class UserEntity extends defaultClasses.TimeStamps implements User {
 
   @prop({
     required: true,
-    enum: UserType,
-    type: () => String
+    default: false,
+    type: () => Boolean
   })
-  public userType: UserType;
+  public isPro: boolean;
 
-  constructor(user: CreateUserDTO) {
+  constructor(user: User) {
     super();
     this.name = user.name;
     this.email = user.email;
-    this.userType = user.userType;
+    this.avatarPath = user.avatarPath;
+    this.isPro = user.isPro;
   }
 
   public setPassword(password: string, salt: string): void {

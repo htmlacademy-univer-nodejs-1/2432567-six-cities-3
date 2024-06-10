@@ -1,6 +1,7 @@
 openapi: 3.1.0
 info:
-  title: "API сервер для демо-проекта 'Шесть городов'"
+  title: "API сервер для демо-проекта «Шесть городов»"
+  description: "«Шесть городов» — это бэкенд демо-проект, разработанный на Node.js, предназначенный для управления и предоставления данных для веб-приложения, посвященного туризму в шести крупнейших городах. Этот проект демонстрирует лучшие практики разработки серверной части веб-приложений, использование RESTful API и интеграцию с базой данных."
   version: "1.0.0"
   contact:
     name: Kirill Oschepkov
@@ -32,9 +33,18 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/user'
+                allOf:
+                  - $ref: "#/components/schemas/user"
+                  - properties:
+                      id:
+                        type: string
+                        example: "661bef9f1bdfe1195539b653"
+        "400":
+          description: Некорректный запрос
         "409":
           description: Пользователь с таким email уже существует.
+        "500":
+          description: Внутренняя ошибка сервера
 
   /login:
     get:
@@ -42,12 +52,25 @@ paths:
         - users
       summary: Проверка авторизации пользователя
       description: Возвращает информацию по авторизованному пользователю
+      security:
+        - Authorization: [ ]
       responses:
         "200":
+          description: Пользователь авторизован. Возвращен объект пользователя.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/user'
+                allOf:
+                  - $ref: "#/components/schemas/user"
+                  - properties:
+                      token:
+                        type: string
+        "400":
+          description: Некорректный запрос
+        "401":
+          description: Пользователь не авторизован
+        "500":
+          description: Внутренняя ошибка сервера
 
     post:
       tags:
@@ -59,40 +82,73 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/loginData'
+              $ref: '#/components/schemas/loginUser'
         required: true
       responses:
         "200":
-          description: Пользователь успешно авторизован
+          description: Пользователь успешно авторизован. Возвращен объект пользователя.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/user'
+                allOf:
+                  - $ref: "#/components/schemas/user"
+                  - properties:
+                      token:
+                        type: string
         "401":
           description: Авторизация не пройдена
+        "404":
+          description: Пользователь не найден
+        "500":
+          description: Внутренняя ошибка сервера
 
   /logout:
     delete:
       tags:
         - users
-      summary: Деавторизует пользователя
-      description: Деавторизует текущего пользователя
+      summary: Завершение пользовательского сеанса
+      description: Завершает текущий сеанс пользователя
+      security:
+        - Authorization: []
       responses:
-        "200":
-          description: Пользователь успешно деавторизован
+        "204":
+          description: Успешное завершение сеанса
+        "400":
+          description: Некорректный токен
         "401":
           description: Пользователь не авторизован
+        "500":
+          description: Внутренняя ошибка сервера
 
-  /{userId}/avatar:
+  /avatar:
     post:
       tags:
         - users
       summary: Загрузить изображение аватара
-      description: Загружает изображение аватара пользователя. Изображение
-        аватара должно быть в формате `png` или `jpg`.
+      description: Загружает изображение аватара пользователя. Изображение аватара должно быть в формате `png` или `jpg`
+      security:
+        - Authorization: [ ]
+      requestBody:
+        description: Файл аватара пользователя
+        content:
+          multipart/form-data:
+            schema:
+              required:
+                - avatarPath
+              properties:
+                avatarPath:
+                  type: string
+                  format: binary
+                  example: photo.jpg
       responses:
+        "201":
+          description: Аватар успешно загружен
+        "400":
+          description: Некорректный запрос
         "404":
           description: Пользователь с указанным id не найден
+        "500":
+          description: Внутренняя ошибка сервера
 
   /offers:
     get:
@@ -102,16 +158,21 @@ paths:
       description: Возвращает список доступных предложений для аренды
       responses:
         "200":
+          description: Список предложений успешно получен
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/offersList'
+        "500":
+          description: Внутренняя ошибка сервера
 
     post:
       tags:
         - offers
       summary: Создать новое предложение
       description: Создает новое предложение
+      security:
+        - Authorization: [ ]
       requestBody:
         description: Информация для создания нового предложения
         content:
@@ -126,40 +187,50 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/offer'
-        "422":
+        "400":
           description: Невозможно создать предложение, некорректное тело запроса
+        "401":
+          description: Пользователь не авторизован
+        "500":
+          description: Внутренняя ошибка сервера
 
-  /offers/{id}:
+  /offers/{offerId}:
     get:
       tags:
         - offers
-      summary: Получить предложение по ID
-      description: Возвращает предложений для аренды по его ID
+      summary: Получить предложение по идентификатору
+      description: Возвращает предложений для аренды по его идентификатору
+      parameters:
+        - name: offerId
+          in: path
+          required: true
+          schema:
+            type: string
       responses:
         "200":
+          description: Детальная информация о предложении успешно получена
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/offer'
+        "400":
+          description: Неверный запрос
         "404":
           description: Предложение с переданным id не найдено
-
-    delete:
-      tags:
-        - offers
-      summary: Удалить предложение
-      description: Удалить предложение с заданным id
-      responses:
-        "204":
-          description: Предложение успешно удалено
-        "404":
-          description: Предложение с переданным id не найдено
+        "500":
+          description: Внутренняя ошибка сервера
 
     patch:
       tags:
         - offers
       summary: Изменить предложение
-      description: Изменить предложение с заданным id
+      description: Изменяет предложение по идентификатору
+      parameters:
+        - name: offerId
+          in: path
+          required: true
+          schema:
+            type: string
       requestBody:
         description: Информация для изменения предложения
         content:
@@ -169,22 +240,55 @@ paths:
         required: true
       responses:
         "200":
-          description: Предложение успешно изменено. Объект предложения.
+          description: Предложение успешно изменено. Возвращен объект предложения
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/offer'
+        "400":
+          description: Неверный запрос.
+        "401":
+          description: Пользователь не авторизован.
+        "403":
+          description: Доступ запрещен.
         "404":
           description: Предложение с переданным id не найдено
         "422":
           description: Невозможно изменить предложение, некорректное тело запроса
+        "500":
+          description: Внутренняя ошибка сервера.
 
-  /premium:
+    delete:
+      tags:
+        - offers
+      summary: Удалить предложение
+      description: Удалить предложение с заданным id
+      parameters:
+        - name: offerId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Предложение успешно удалено
+        "400":
+          description: Неверный запрос
+        "401":
+          description: Пользователь не авторизован
+        "403":
+          description: Доступ запрещен
+        "404":
+          description: Предложение с переданным id не найдено
+        "500":
+          description: Внутренняя ошибка сервера
+
+  /offers/premium:
     get:
       tags:
         - offers
-      summary: Получить список премиум-предложений
-      description: Возвращает список премиум-предложений для аренды
+      summary: Получить список премиум-предложений для города
+      description: Возвращает список премиум-предложений по аренде для указанного города
       parameters:
         - name: city
           in: query
@@ -201,91 +305,145 @@ paths:
               - Dusseldorf
       responses:
         "200":
+          description: Список премиальных предложений для города
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/offersList'
+        "400":
+          description: Некорректный запрос
+        "500":
+          description: Внутренняя ошибка сервера
 
-  /offers/{id}/comments:
+  /offers/{offerId}/comments:
     get:
       tags:
         - comments
-      summary: Получить список комментариев для предложения
-      description: Получить список комментариев для предложения с указанным id
+      summary: Получить список комментариев предложения по идентификатору
+      description: Возвращает список комментариев для предложения по указанному идентификатору
+      parameters:
+        - name: offerId
+          in: path
+          required: true
+          schema:
+            type: string
       responses:
         "200":
+          description: Список комментариев для предложения
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/commentsList'
+        "400":
+          description: Некорректный запрос
         "404":
-          description: Предложение с переданным id не найдено
+          description: Предложение по указанному идентификатору не найдено
+        "500":
+          description: Внутренняя ошибка сервера
 
-    post:
-      tags:
-        - comments
-      summary: Добавить новый комментарий для предложения
-      description: Добавить новый комментарий для предложения с указанным id
-      responses:
-        "201":
-          description: Комментарий успешно добавлен
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/comment'
-        "404":
-          description: Предложение с переданным id не найдено
-        "422":
-          description: Невозможно добавить комментарий, некорректное тело запроса
+#    post:
+#      tags:
+#        - comments
+#      summary: Добавить новый комментарий для предложения
+#      description: Добавить новый комментарий для предложения с указанным id
+#      responses:
+#        "201":
+#          description: Комментарий успешно добавлен
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/comment'
+#        "404":
+#          description: Предложение с переданным id не найдено
+#        "422":
+#          description: Невозможно добавить комментарий, некорректное тело запроса
 
-  /favorites:
+  /offers/favorites:
     get:
       tags:
         - offers
       summary: Получить список предложений, добавленных в избранное
       description: Возвращает список предложений для аренды, добавленных в избранное
+      security:
+        - bearerAuth: []
       responses:
         "200":
+          description: Список избранных предложений
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/offersList'
+        "401":
+          description: Пользователь не авторизован
+        "500":
+          description: Внутренняя ошибка сервера
 
-  /favorites/{id}:
+  /offers/favorites/{offerId}:
     post:
       tags:
         - offers
       summary: Добавить предложение в избранные
       description: Добавить предложение с указанным id в избранные
+      parameters:
+        - name: offerId
+          in: path
+          required: true
+          schema:
+            type: string
       responses:
         "200":
-          description: Предложение успешно добавлено в избранные
+          description: Предложение успешно добавлено в избранные. Возвращен объект предложения
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/offer"
         "400":
           description: Предложение уже является избранным
+        "401":
+          description: Пользователь не авторизован
         "404":
           description: Предложение с переданным id не найдено
+        "500":
+          description: Внутренняя ошибка сервера
 
     delete:
       tags:
         - offers
       summary: Исключить предложение из избранных
       description: Исключить предложение с указанным id из избранных
+      parameters:
+        - name: offerId
+          in: path
+          required: true
+          schema:
+            type: string
       responses:
         "200":
           description: Предложение успешно исключено из избранных
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/offer"
         "400":
           description: Предложение не является избранным
+        "401":
+          description: Пользователь не авторизован
         "404":
           description: Предложение с переданным id не найдено
+        "500":
+          description: Внутренняя ошибка сервера
 
 components:
   schemas:
-    loginData:
+    loginUser:
       type: object
+      required:
+        - email
+        - password
       properties:
         email:
           type: string
-          example: example@examle.com
+          example: example@example.com
         password:
           type: string
           format: password
@@ -299,19 +457,14 @@ components:
           example: Example user
         email:
           type: string
-          example: example@examle.com
+          example: example@example.com
         password:
           type: string
           format: password
           example: qwerty123
-        avatar:
-          type: string
-          format: string
-        type:
-          type: string
-          enum:
-            - Common
-            - Pro
+        isPro:
+          type: boolean
+          example: false
 
     user:
       type: object
@@ -331,7 +484,7 @@ components:
           example: Example offer
         description:
           type: string
-          example: Example description
+          example: Example description about the offer
         city:
           type: string
           enum:
@@ -341,27 +494,23 @@ components:
             - Amsterdam
             - Hamburg
             - Dusseldorf
-          example: Cologne
-        preview:
-          type: string
-          example: example.png
-        pictures:
-          type: array
-          items:
-            type: string
-          example:
-            - example.png
-            - example.jpg
+          example: Paris
         isPremium:
           type: boolean
-        housingType:
+          example: false
+        houseType:
           type: string
-        roomsCount:
+          enum:
+            - Apartment
+            - House
+            - Room
+            - Hotel
+        countRooms:
           type: integer
           format: int32
           minimum: 1
           maximum: 8
-        guestsCount:
+        countGuests:
           type: integer
           format: int32
           minimum: 1
@@ -371,7 +520,7 @@ components:
           format: int32
           minimum: 100
           maximum: 100000
-        facilities:
+        goods:
           type: array
           items:
             type: string
@@ -383,7 +532,8 @@ components:
               - Washer
               - Towels
               - Fridge
-        coordinates:
+          example: ['Breakfast', 'Fridge']
+        location:
           type: object
           properties:
             latitude:
@@ -569,3 +719,10 @@ components:
         authorId:
           type: string
           example: 6329c3d6a04ab1061c6425ea
+
+  securitySchemes:
+    Authorization:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      value: "Bearer <JWT-token>"

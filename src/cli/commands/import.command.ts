@@ -11,7 +11,7 @@ import { DBClientInterface } from '../../shared/libs/db-client/db-client.interfa
 import { LoggerInterface } from '../../shared/libs/logger/logger.interface.js';
 import { Offer } from '../../shared/types.js';
 import { getMongoURI } from '../../shared/utils/get-url.js';
-import { DEFAULT_DB_PORT, DEFAULT_USER_PASSWORD } from '../../shared/const.js';
+import { DEFAULT_DB_PORT, DEFAULT_PREVIEW_FILE_NAME, DEFAULT_USER_PASSWORD } from '../../shared/const.js';
 import chalk from 'chalk';
 
 
@@ -49,7 +49,7 @@ export class ImportCommand implements Command {
 
   private async saveOffer(offer: Offer) {
     const userDTO = {
-      ...offer.author,
+      ...offer.user,
       password: DEFAULT_USER_PASSWORD
     };
 
@@ -63,17 +63,15 @@ export class ImportCommand implements Command {
       description: offer.description,
       postDate: offer.postDate,
       city: offer.city,
-      photos: offer.photos,
+      previewImage: DEFAULT_PREVIEW_FILE_NAME,
       isPremium: offer.isPremium,
-      isFavorite: offer.isFavorite,
-      rating: offer.rating,
       houseType: offer.houseType,
       countRooms: offer.countRooms,
       countGuests: offer.countGuests,
       price: offer.price,
-      facilities: [...offer.facilities],
-      authorId: userEntity.id,
-      coordinates: offer.coordinates
+      goods: [...offer.goods],
+      userId: userEntity.id,
+      location: offer.location
     });
   }
 

@@ -13,4 +13,7 @@ export const CreateUserValidationMessages = {
     invalidFormat: 'Password is required',
     lengthField: 'Min length for password is 6, max is 12'
   },
+  isPro: {
+    invalidFormat: 'IsPro must be is boolean'
+  }
 } as const;

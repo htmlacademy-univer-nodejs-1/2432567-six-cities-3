@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { DocumentExists } from '../types/document-exists.interface.js';
 import { MiddlewareInterface } from './middleware.interface.js';
-import { HttpError } from '../errors/http-error.js';
+import { HttpError } from '../errors/exceptions/http-error.js';
 
 export class DocumentExistsMiddleware implements MiddlewareInterface {
   constructor(

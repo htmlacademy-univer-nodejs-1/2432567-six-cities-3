@@ -10,7 +10,7 @@ import { fillDTO } from '../../utils/fill-dto.js';
 import { OfferRDO } from './rdo/offer.rdo.js';
 import { RequestParams } from '../../../rest/types/request-params.type.js';
 import { RequestBody } from '../../../rest/types/request-body.type.js';
-import { CreateOfferDto } from './dto/create-offer.dto.js';
+import { CreateOfferDTO } from './dto/create-offer-dto.js';
 import { ParamOfferId } from './types/param-offerid.type.js';
 import { UpdateOfferDTO } from './dto/update-offer.dto.js';
 import { CommentComponent } from '../comment/comment.component.js';
@@ -24,6 +24,7 @@ import { ConfigInterface } from '../../libs/config/config.interface.js';
 import { ConfigSchema } from '../../libs/config/config.schema.js';
 import { UploadFileMiddleware } from '../../../rest/middleware/upload-file.middleware.js';
 import { UploadImageRDO } from './rdo/upload-image.rdo.js';
+import { DEFAULT_PREVIEW_FILE_NAME } from '../../const.js';
 
 @injectable()
 export class OfferController extends BaseController {
@@ -37,53 +38,20 @@ export class OfferController extends BaseController {
     super(logger);
     this.logger.info('Register router for OfferController');
 
-    /**
-     * @swagger
-     * /offers:
-     *  get:
-     *     tags: [Offer]
-     *     description: Получение всех предложений
-     *     responses:
-     *       200:
-     *         description: Список объектов всех предложений
-     */
-    this.addRoute({ path: '/', method: HttpMethod.Get, handler: this.index });
-
-    /**
-     * @swagger
-     * /offers:
-     *  post:
-     *     tags:
-     *     - Offer
-     *     description: Создание нового предложения
-     *     responses:
-     *       200:
-     *         description: Объект новое предложения
-     */
+    this.addRoute({
+      path: '/',
+      method: HttpMethod.Get,
+      handler: this.index
+    });
     this.addRoute({
       path: '/',
       method: HttpMethod.Post,
       handler: this.create,
-      middlewares: [new ValidateDTOMiddleware(CreateOfferDto)]
+      middlewares: [
+        new PrivateRouteMiddleware(),
+        new ValidateDTOMiddleware(CreateOfferDTO),
+      ]
     });
-
-    /**
-     * @swagger
-     * /offers/{id}:
-     *  get:
-     *     tags: [Offer]
-     *     description: Получение предложения по идентификатору id
-     *     parameters:
-     *       - in: path
-     *         name: offerId
-     *         schema:
-     *           types: string
-     *         required: true
-     *         description: Идентификатор книги
-     *     responses:
-     *       200:
-     *         description: Объект предложения с указанным идентификатором
-     */
     this.addRoute({
       path: '/:offerId',
       method: HttpMethod.Get,
@@ -94,23 +62,6 @@ export class OfferController extends BaseController {
         new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
       ]
     });
-    /**
-     * @swagger
-     * /offers/{id}:
-     *  get:
-     *     tags: [Offer]
-     *     description: Удаление предложения по идентификатору id
-     *     parameters:
-     *       - in: path
-     *         name: offerId
-     *         schema:
-     *           types: string
-     *         required: true
-     *         description: Идентификатор книги
-     *     responses:
-     *       200:
-     *         description: Возвращаемое значение отсутствует. Статус-код указывает на успешность удаления
-     */
     this.addRoute({
       path: '/:offerId',
       method: HttpMethod.Delete,
@@ -121,24 +72,6 @@ export class OfferController extends BaseController {
         new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId')
       ]
     });
-
-    /**
-     * @swagger
-     * /offers/{id}:
-     *  get:
-     *     tags: [Offer]
-     *     description: Изменение предложения по идентификатору id
-     *     parameters:
-     *       - in: path
-     *         name: offerId
-     *         schema:
-     *           types: string
-     *         required: true
-     *         description: Идентификатор книги
-     *     responses:
-     *       200:
-     *         description: Измененный объект предложения
-     */
     this.addRoute({
       path: '/:offerId',
       method: HttpMethod.Patch,
@@ -181,10 +114,16 @@ export class OfferController extends BaseController {
   }
 
   public async create(
-    { body, tokenPayload }: Request<RequestParams, RequestBody, CreateOfferDto>,
+    { body, tokenPayload }: Request<RequestParams, RequestBody, CreateOfferDTO>,
     res: Response
   ): Promise<void> {
-    const result = await this.offerService.create({ ...body, authorId: tokenPayload.id });
+    console.log(tokenPayload.id);
+    const result = await this.offerService.create({
+      ...body,
+      postDate: new Date(),
+      previewImage: DEFAULT_PREVIEW_FILE_NAME,
+      userId: tokenPayload.id
+    });
     this.created(res, fillDTO(OfferRDO, result));
   }
 
@@ -245,7 +184,7 @@ export class OfferController extends BaseController {
 
   public async uploadImage({ params, file } : Request<ParamOfferId>, res: Response) {
     const { offerId } = params;
-    const updateDTO = { preview: file?.filename };
+    const updateDTO = { previewImage: file?.filename };
     await this.offerService.updateById(offerId, updateDTO);
     const responseData = fillDTO(UploadImageRDO, updateDTO);
     this.created(res, responseData);

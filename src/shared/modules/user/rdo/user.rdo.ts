@@ -14,5 +14,5 @@ export class UserRDO {
   public avatarPath: string;
 
   @Expose()
-  public userType: string;
+  public isPro: boolean;
 }

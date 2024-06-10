@@ -12,12 +12,13 @@ import { UserComponent } from '../shared/modules/user/user.component.js';
 import { ExceptionFilterInterface } from './errors/exception-filter/exception-filter.interface.js';
 import { DBClientInterface } from '../shared/libs/db-client/db-client.interface.js';
 import swaggerUi from 'swagger-ui-express';
-import swaggerSpec from './config/swagger.js';
 import { CommentComponent } from '../shared/modules/comment/comment.component.js';
 import { AuthComponent } from '../shared/modules/auth/auth.component.js';
 import { ParseTokenMiddleware } from './middleware/parse-token.middleware.js';
 import { getFullServerPath } from '../shared/utils/full-server-path.js';
 import { STATIC_FILES_ROUTE, STATIC_UPLOAD_ROUTE } from '../shared/const.js';
+import YAML from 'yaml';
+import fs from 'node:fs';
 
 
 @injectable()
@@ -53,7 +54,7 @@ export class RestApplication {
 
   private async _initControllers() {
     this.server.use('/offers', this.offerController.router);
-    this.server.use('/users', this.userController.router);
+    this.server.use('', this.userController.router);
     this.server.use('/comment', this.commentController.router);
   }
 
@@ -83,7 +84,9 @@ export class RestApplication {
   private async _initServer() {
     const port = this.config.get('PORT');
     this.server.listen(port);
-    this.server.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+    const file = fs.readFileSync('specification/project.spec.yml', 'utf8');
+    this.server.use('/swagger', swaggerUi.serve, swaggerUi.setup(YAML.parse(file)));
   }
 
   public async init() {

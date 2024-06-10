@@ -3,15 +3,14 @@ import { MiddlewareInterface } from './middleware.interface.js';
 import { NextFunction, Request, Response } from 'express';
 import { jwtVerify } from 'jose';
 import { createSecretKey } from 'node:crypto';
-import { HttpError } from '../errors/http-error.js';
+import { HttpError } from '../errors/exceptions/http-error.js';
 import { StatusCodes } from 'http-status-codes';
 
 function isTokenPayload(payload: unknown): payload is TokenPayload {
   return (
     (typeof payload === 'object' && payload !== null) &&
     ('email' in payload && typeof payload.email === 'string') &&
-    ('firstname' in payload && typeof payload.firstname === 'string') &&
-    ('lastname' in payload && typeof payload.lastname === 'string') &&
+    ('name' in payload && typeof payload.name === 'string') &&
     ('id' in payload && typeof payload.id === 'string')
   );
 }
@@ -21,6 +20,7 @@ export class ParseTokenMiddleware implements MiddlewareInterface {
 
   public async execute(req: Request, _res: Response, next: NextFunction): Promise<void> {
     const authorizationHeader = req.headers?.authorization?.split(' ');
+
     if (!authorizationHeader) {
       return next();
     }
@@ -35,12 +35,16 @@ export class ParseTokenMiddleware implements MiddlewareInterface {
         return next();
       }
     } catch {
-
       return next(new HttpError(
         StatusCodes.UNAUTHORIZED,
         'Invalid token',
         'AuthenticateMiddleware')
       );
     }
+    return next(new HttpError(
+      StatusCodes.INTERNAL_SERVER_ERROR,
+      'Server error',
+      'AuthenticateMiddleware')
+    );
   }
 }
